@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IDECO - Duyệt Tài Liệu</title>
+<style>
+  :root{
+    --red:#ee3a23; --red-d:#c92e19; --green:#1a9d4b; --green-d:#137a3a;
+    --bg:#f4f5f7; --card:#fff; --line:#e3e6ea; --txt:#1f2937; --mut:#6b7280;
+    --shadow:0 2px 12px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg);color:var(--txt);font-size:15px}
+  header{background:var(--red);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;
+    position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  header img{height:36px;border-radius:6px;background:#fff;padding:3px}
+  header h1{font-size:17px;margin:0;font-weight:700;flex:1;line-height:1.2}
+  header .sub{font-size:11px;opacity:.9;font-weight:400}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;
+    box-shadow:var(--shadow);margin-bottom:16px}
+  .btn{border:none;border-radius:10px;padding:11px 18px;font-size:15px;font-weight:600;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:.15s;color:#fff;background:var(--red)}
+  .btn:active{transform:scale(.97)}
+  .btn.green{background:var(--green)}
+  .btn.gray{background:#4b5563}
+  .btn.ghost{background:#fff;color:var(--txt);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.sm{padding:7px 12px;font-size:13px;border-radius:8px}
+  input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+    font-size:15px;font-family:inherit;background:#fff}
+  input:focus,select:focus{outline:none;border-color:var(--red)}
+  label{font-size:13px;font-weight:600;color:var(--mut);display:block;margin-bottom:6px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--mut);font-size:13px}
+  .drop{border:2px dashed var(--red);border-radius:14px;padding:26px;text-align:center;cursor:pointer;
+    background:#fff5f4;transition:.15s}
+  .drop:hover{background:#ffece9}
+  .drop .ico{font-size:38px}
+  #editor{display:none}
+  .stage-wrap{background:#e9ecef;border-radius:12px;padding:14px;overflow:auto;max-height:70vh;
+    display:flex;justify-content:center}
+  #stage{position:relative;background:#fff;box-shadow:0 3px 14px rgba(0,0,0,.2);transform-origin:top center}
+  #stage img.bg{display:block;width:100%}
+  .stamp{position:absolute;cursor:grab;user-select:none;touch-action:none;z-index:10}
+  .stamp:active{cursor:grabbing}
+  .stamp svg,.stamp img{display:block;pointer-events:none;width:100%;height:auto}
+  .pgnav{display:flex;gap:8px;align-items:center;justify-content:center;margin:10px 0}
+  .doc-item{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);
+    border-radius:12px;margin-bottom:10px;background:#fff}
+  .doc-item .thumb{width:46px;height:46px;border-radius:9px;background:#f0f2f5;display:flex;
+    align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .doc-item .info{flex:1;min-width:0}
+  .doc-item .info b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700;display:inline-block}
+  .badge.wait{background:#fff3cd;color:#946c00}
+  .badge.ok{background:#d5f4e0;color:var(--green-d)}
+  .tabs{display:flex;gap:8px;margin-bottom:14px}
+  .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-weight:600;cursor:pointer;
+    background:#fff;border:1px solid var(--line);font-size:14px}
+  .tab.active{background:var(--red);color:#fff;border-color:var(--red)}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;
+    padding:12px 20px;border-radius:10px;z-index:300;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,.3);
+    opacity:0;transition:.25s;pointer-events:none}
+  .toast.show{opacity:1;bottom:34px}
+  .empty{text-align:center;padding:40px 20px;color:var(--mut)}
+  .empty .ico{font-size:44px;margin-bottom:10px}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;
+    justify-content:center;z-index:150;padding:20px}
+  .modal-bg.show{display:flex}
+  .modal{background:#fff;border-radius:16px;padding:22px;max-width:420px;width:100%}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+  .size-ctrl{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);
+    border-radius:8px;padding:4px 8px}
+  .size-ctrl button{border:none;background:var(--red);color:#fff;width:26px;height:26px;border-radius:6px;
+    font-size:16px;cursor:pointer;font-weight:700}
+  .hint{background:#eef6ff;border:1px solid #cfe4fb;color:#1e5a99;padding:10px 12px;border-radius:10px;
+    font-size:13px;margin-bottom:12px}
+  .seal-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .seal-chip{border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column;
+    align-items:center;gap:4px;width:92px;background:#fff;position:relative}
+  .seal-chip img{width:76px;height:52px;object-fit:contain;cursor:pointer}
+  .seal-chip .x{position:absolute;top:-8px;right:-8px;background:var(--red);color:#fff;
+    border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;line-height:1}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://cdn.imgpile.com/f/9nSpNq5_o.png" onerror="this.style.display='none'" alt="">
+  <h1>Duyệt Tài Liệu <span class="sub">IDECO</span></h1>
+  <button class="btn ghost sm" onclick="broadcastLive()"
+    style="color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)">
+    📢 Thông báo Live
+  </button>
+</header>
+
+<div class="wrap">
+
+  <!-- HOME -->
+  <div id="home">
+    <div class="card">
+      <div class="drop" id="drop" onclick="fileInp.click()">
+        <div class="ico">📤</div>
+        <div style="font-weight:700;margin-top:6px">Tải tài liệu lên để duyệt</div>
+        <div class="muted" style="margin-top:4px">PDF · JPG · PNG — bấm hoặc kéo thả vào đây</div>
+      </div>
+      <input type="file" id="fileInp" accept="application/pdf,image/*" style="display:none">
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" data-f="all" onclick="setFilter('all')">Tất cả</div>
+        <div class="tab" data-f="wait" onclick="setFilter('wait')">Chờ duyệt</div>
+        <div class="tab" data-f="ok" onclick="setFilter('ok')">Đã duyệt</div>
+      </div>
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <!-- EDITOR -->
+  <div id="editor">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <button class="btn ghost sm" onclick="closeEditor()">← Quay lại</button>
+        <b id="edName" style="font-size:15px"></b>
+      </div>
+
+      <div class="hint">💡 Thêm con dấu <b>"ĐÃ DUYỆT"</b> hoặc tải <b>ảnh PNG chữ ký/con dấu</b> để chèn vào văn bản/ảnh. Kéo đến vị trí bất kỳ, chỉnh cỡ bằng +/−, xoá dấu đang chọn. Xong bấm lưu.</div>
+
+      <div class="toolbar">
+        <button class="btn green sm" onclick="addStamp('text')">➕ Dấu "Đã Duyệt"</button>
+        <button class="btn sm" onclick="sealInp.click()">🖼 Tải ảnh chữ ký (PNG)</button>
+        <input type="file" id="sealInp" accept="image/png,image/*" style="display:none">
+        <div class="size-ctrl">
+          <span class="muted">Cỡ dấu</span>
+          <button onclick="resizeStamp(-.1)">−</button>
+          <button onclick="resizeStamp(.1)">+</button>
+        </div>
+        <button class="btn gray sm" onclick="removeStamp()">🗑 Xoá dấu đang chọn</button>
+      </div>
+
+      <div id="sealLib" style="display:none">
+        <label>Ảnh chữ ký đã lưu (bấm để chèn):</label>
+        <div class="seal-strip" id="sealStrip"></div>
+      </div>
+
+      <div class="pgnav" id="pgnav" style="display:none">
+        <button class="btn ghost sm" onclick="gotoPage(curPage-1)">‹</button>
+        <span class="muted">Trang <b id="pgcur">1</b> / <span id="pgtot">1</span></span>
+        <button class="btn ghost sm" onclick="gotoPage(curPage+1)">›</button>
+      </div>
+
+      <div class="stage-wrap"><div id="stage"></div></div>
+
+      <div class="row" style="margin-top:14px">
+        <div style="flex:1;min-width:200px">
+          <label>Tên tài liệu</label>
+          <input id="saveName" placeholder="VD: Báo giá Long Châu 07/2026">
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" onclick="saveDoc(false)">💾 Lưu (chờ duyệt)</button>
+        <button class="btn green" onclick="saveDoc(true)">✅ Đóng dấu & Duyệt</button>
+        <button class="btn gray" onclick="downloadCurrent()">⬇ Tải xuống</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div class="modal-bg" id="apprModal">
+  <div class="modal">
+    <h3 style="margin-top:0">Xác nhận duyệt</h3>
+    <p class="muted">Nhập mật khẩu để ký duyệt tài liệu này.</p>
+    <input type="password" id="apprPwd" placeholder="Mật khẩu ký duyệt" onkeydown="if(event.key==='Enter')confirmApprove()">
+    <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin-top:10px">
+      <input type="checkbox" id="rememberPwd" style="width:auto" checked> Ghi nhớ, lần sau không hỏi lại trên máy này
+    </label>
+    <div id="apprErr" class="muted" style="color:var(--red);height:16px;margin-top:8px"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:8px">
+      <button class="btn ghost sm" onclick="closeModal('apprModal')">Huỷ</button>
+      <button class="btn green sm" onclick="confirmApprove()">✅ Xác nhận duyệt</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ===== CONFIG ===== */
+const APP_PASSWORD = "minhtriet1973";
+const firebaseConfig = {
+  apiKey: "AIzaSyBwMbnvWlyoBUcGtb4RJuZDS7abxhNuvMg",
+  authDomain: "duyettailieu.firebaseapp.com",
+  projectId: "duyettailieu",
+  storageBucket: "duyettailieu.firebasestorage.app",
+  messagingSenderId: "56651689713",
+  appId: "1:56651689713:web:c1f0061e405ffe615f8350",
+  measurementId: "G-B1ED56NJZK"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+/* ===== STATE ===== */
+let docs = {};
+let curFilter = "all";
+let cur = null;
+let curPage = 0;
+let selectedStamp = null;
+let seals = [];
+const STAMP_BASE_W = 190;
+const SEAL_BASE_W  = 180;
+let curNatW=0, curNatH=0;
+// stamp width as fraction of document width (WYSIWYG on any zoom)
+const STAMP_WR = 0.26;  // "Đã Duyệt" seal ~26% of page width
+const SEAL_WR  = 0.24;  // signature ~24%
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* ===== INIT — no login, everyone sees the list ===== */
+db.ref('documents').on('value',snap=>{docs=snap.val()||{};renderList();});
+// Signatures stored on Firebase → available on every machine, no re-upload
+db.ref('signatures').on('value',snap=>{
+  const v=snap.val()||{};
+  seals=Object.entries(v).map(([id,s])=>({id,src:s.src,name:s.name||'',updated:s.updated||0}))
+    .sort((a,b)=>(b.updated||0)-(a.updated||0));
+  if(document.getElementById('editor').style.display==='block')renderSealLib();
+});
+
+function setFilter(f){curFilter=f;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.f===f));renderList();}
+
+function renderList(){
+  const el=document.getElementById('list');
+  let arr=Object.entries(docs).map(([id,d])=>({id,...d})).sort((a,b)=>(b.updated||0)-(a.updated||0));
+  if(curFilter==='wait') arr=arr.filter(d=>!d.approved);
+  if(curFilter==='ok') arr=arr.filter(d=>d.approved);
+  if(!arr.length){el.innerHTML=`<div class="empty"><div class="ico">📄</div>Chưa có tài liệu nào</div>`;return;}
+  el.innerHTML=arr.map(d=>`
+    <div class="doc-item">
+      <div class="thumb">${d.type==='pdf'?'📕':'🖼️'}</div>
+      <div class="info">
+        <b>${esc(d.name)}</b>
+        <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':'⏳ Chờ duyệt'}</span>
+        <span class="muted"> · ${fmtDate(d.updated)}</span>
+      </div>
+      <div class="row" style="gap:6px">
+        ${d.approved?'':`<button class="btn sm" style="background:#e08600" onclick="broadcastPending('${d.id}')">🔔 Xin duyệt</button>`}
+        <button class="btn green sm" onclick="downloadDoc('${d.id}')">⬇ Tải</button>
+        <button class="btn ghost sm" onclick="openDoc('${d.id}')">✏️</button>
+        <button class="btn gray sm" onclick="delDoc('${d.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fmtDate(t){if(!t)return'';const d=new Date(t);
+  return d.toLocaleDateString('vi-VN')+' '+d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});}
+
+/* ===== UPLOAD DOC ===== */
+const fileInp=document.getElementById('fileInp');
+const drop=document.getElementById('drop');
+fileInp.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);fileInp.value='';});
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.background='#ffece9';}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.background='';}));
+drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f);});
+
+async function handleFile(file){
+  toast('Đang xử lý tài liệu…');
+  try{
+    if(file.type==='application/pdf'){
+      cur={name:file.name.replace(/\.[^.]+$/,''),type:'pdf',pages:await pdfToImages(file),stamps:{}};
+    }else if(file.type.startsWith('image/')){
+      const norm=await imgToPngDataURL(await fileToDataURL(file),1600,false);
+      cur={name:file.name.replace(/\.[^.]+$/,''),type:'image',pages:[norm],stamps:{}};
+    }else{toast('Định dạng không hỗ trợ');return;}
+    curPage=0;openEditor();
+  }catch(err){console.error(err);toast('Lỗi khi đọc tài liệu');}
+}
+function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();
+  r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+function imgToPngDataURL(dataURL,maxW,keepAlpha){return new Promise((res)=>{const img=new Image();
+  img.onload=()=>{const c=document.createElement('canvas');let sc=img.width>maxW?maxW/img.width:1;
+    c.width=img.width*sc;c.height=img.height*sc;
+    const ctx=c.getContext('2d');ctx.drawImage(img,0,0,c.width,c.height);
+    res(c.toDataURL('image/png'));};img.src=dataURL;});}
+async function pdfToImages(file){
+  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+  const n=pdf.numPages;
+  // Adaptive resolution: fewer pages → sharper; many pages → lighter so all fit in Firebase
+  const scale = n<=3 ? 2 : (n<=8 ? 1.6 : (n<=20 ? 1.3 : 1.1));
+  const pages=[];
+  for(let i=1;i<=n;i++){
+    toast(`Đang tải trang ${i}/${n}…`);
+    const page=await pdf.getPage(i);
+    const vp=page.getViewport({scale});
+    const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+    // white background so JPEG doesn't turn transparent areas black
+    const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+    await page.render({canvasContext:ctx,viewport:vp}).promise;
+    pages.push(c.toDataURL('image/jpeg',0.82));
+    c.width=c.height=0; // free memory between pages
+  }
+  return pages;
+}
+
+/* ===== SEAL (PNG signature) ===== */
+const sealInp=document.getElementById('sealInp');
+sealInp.addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  toast('Đang lưu chữ ký…');
+  const url=await imgToPngDataURL(await fileToDataURL(f),600,true);
+  const id=db.ref('signatures').push().key;
+  await db.ref('signatures/'+id).set({src:url,name:f.name.replace(/\.[^.]+$/,''),updated:Date.now()});
+  addStamp('seal',url);
+  toast('✅ Đã lưu chữ ký (dùng lại trên mọi máy)');
+  sealInp.value='';
+});
+function renderSealLib(){
+  const box=document.getElementById('sealLib');const strip=document.getElementById('sealStrip');
+  if(!seals.length){box.style.display='none';return;}
+  box.style.display='block';strip.innerHTML='';
+  seals.forEach((s)=>{
+    const chip=document.createElement('div');chip.className='seal-chip';
+    const x=document.createElement('button');x.className='x';x.textContent='×';x.title='Xoá chữ ký';
+    x.onclick=(ev)=>{ev.stopPropagation();delSeal(s.id);};
+    const im=document.createElement('img');im.src=s.src;im.title='Bấm để chèn';
+    im.onclick=()=>addStamp('seal',s.src);
+    chip.appendChild(x);chip.appendChild(im);strip.appendChild(chip);
+  });
+}
+function delSeal(id){
+  if(!confirm('Xoá chữ ký này khỏi thư viện?'))return;
+  db.ref('signatures/'+id).remove().then(()=>toast('Đã xoá chữ ký'));
+}
+
+/* ===== EDITOR ===== */
+function openEditor(){
+  document.getElementById('home').style.display='none';
+  document.getElementById('editor').style.display='block';
+  document.getElementById('edName').textContent=cur.name;
+  document.getElementById('saveName').value=cur.name;
+  renderSealLib();window.scrollTo(0,0);renderPage();
+}
+function closeEditor(){
+  document.getElementById('editor').style.display='none';
+  document.getElementById('home').style.display='block';
+  cur=null;selectedStamp=null;
+}
+function gotoPage(p){if(p<0||p>=cur.pages.length)return;curPage=p;renderPage();}
+function renderPage(){
+  const stage=document.getElementById('stage');stage.innerHTML='';
+  const img=new Image();img.className='bg';
+  img.onload=()=>{
+    stage.style.width=img.naturalWidth+'px';stage.style.height=img.naturalHeight+'px';
+    curNatW=img.naturalWidth;curNatH=img.naturalHeight;
+    const wrapW=stage.parentElement.clientWidth-28;
+    const scale=img.naturalWidth>wrapW?wrapW/img.naturalWidth:1;
+    stage.style.transform=`scale(${scale})`;
+    stage.style.marginBottom=(img.naturalHeight*(scale-1))+'px';
+    renderStamps();
+  };
+  img.src=cur.pages[curPage];stage.appendChild(img);
+  const nav=document.getElementById('pgnav');
+  if(cur.pages.length>1){nav.style.display='flex';
+    document.getElementById('pgcur').textContent=curPage+1;
+    document.getElementById('pgtot').textContent=cur.pages.length;}
+  else nav.style.display='none';
+}
+/* Draw the "ĐÃ DUYỆT" stamp on a real canvas → reliable Vietnamese text
+   both on screen and in the exported file. Returns a PNG dataURL. */
+function buildStampDataURL(){
+  const W=380,H=210,r='#c92e19';
+  const c=document.createElement('canvas');c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.strokeStyle=r;
+  ctx.lineWidth=7;roundRect(ctx,8,8,W-16,H-16,20);ctx.stroke();
+  ctx.lineWidth=3;roundRect(ctx,24,24,W-48,H-48,12);ctx.stroke();
+  ctx.fillStyle=r;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font='800 60px Arial,"Segoe UI",sans-serif';
+  ctx.fillText('ĐÃ DUYỆT',W/2,88);
+  ctx.font='26px Arial,"Segoe UI",sans-serif';
+  ctx.fillText('IDECO · Giám đốc',W/2,138);
+  ctx.font='22px Arial,"Segoe UI",sans-serif';
+  ctx.fillText('Ngày '+new Date().toLocaleDateString('vi-VN'),W/2,172);
+  return c.toDataURL('image/png');
+}
+function roundRect(ctx,x,y,w,h,rad){
+  ctx.beginPath();
+  ctx.moveTo(x+rad,y);
+  ctx.arcTo(x+w,y,x+w,y+h,rad);
+  ctx.arcTo(x+w,y+h,x,y+h,rad);
+  ctx.arcTo(x,y+h,x,y,rad);
+  ctx.arcTo(x,y,x+w,y,rad);
+  ctx.closePath();
+}
+function renderStamps(){
+  const stage=document.getElementById('stage');
+  stage.querySelectorAll('.stamp').forEach(s=>s.remove());
+  (cur.stamps[curPage]||[]).forEach((st,idx)=>stage.appendChild(makeStampEl(st,idx)));
+}
+function makeStampEl(st,idx){
+  const el=document.createElement('div');el.className='stamp';el.dataset.idx=idx;
+  if(st.kind!=='seal' && !st.src) st.src=buildStampDataURL();
+  const w=st.wr*curNatW;                 // stamp width in natural px
+  el.style.left=(st.xr*curNatW)+'px';
+  el.style.top =(st.yr*curNatH)+'px';
+  el.style.width=w+'px';
+  el.innerHTML = `<img src="${st.src}">`;
+  el.addEventListener('pointerdown',e=>{selectedStamp={page:curPage,idx};highlightSel();startDrag(e,el,st);});
+  if(selectedStamp&&selectedStamp.page===curPage&&selectedStamp.idx===idx)
+    el.style.outline='2px dashed #1a9d4b';
+  return el;
+}
+function highlightSel(){document.querySelectorAll('.stamp').forEach(s=>s.style.outline='');
+  if(selectedStamp){const s=document.querySelector(`.stamp[data-idx="${selectedStamp.idx}"]`);
+    if(s)s.style.outline='2px dashed #1a9d4b';}}
+function getStageScale(){const st=document.getElementById('stage');
+  const m=st.style.transform.match(/scale\(([\d.]+)\)/);return m?parseFloat(m[1]):1;}
+function startDrag(e,el,st){
+  e.preventDefault();const scale=getStageScale();
+  const sx=e.clientX,sy=e.clientY,oxr=st.xr,oyr=st.yr;
+  el.setPointerCapture(e.pointerId);
+  function move(ev){
+    const dxNat=(ev.clientX-sx)/scale, dyNat=(ev.clientY-sy)/scale;
+    st.xr=oxr+dxNat/curNatW;
+    st.yr=oyr+dyNat/curNatH;
+    el.style.left=(st.xr*curNatW)+'px';
+    el.style.top =(st.yr*curNatH)+'px';
+  }
+  function up(){el.releasePointerCapture(e.pointerId);
+    el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',up);}
+  el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);
+}
+function addStamp(kind,src){
+  if(!cur.stamps[curPage])cur.stamps[curPage]=[];
+  const wr = kind==='seal'?SEAL_WR:STAMP_WR;
+  const st={kind, wr, xr:(1-wr)/2, yr:0.42};   // centered horizontally, mid page
+  st.src = kind==='seal' ? src : buildStampDataURL();
+  cur.stamps[curPage].push(st);
+  selectedStamp={page:curPage,idx:cur.stamps[curPage].length-1};
+  renderStamps();highlightSel();
+}
+function removeStamp(){
+  if(!selectedStamp){toast('Chưa chọn con dấu');return;}
+  cur.stamps[selectedStamp.page].splice(selectedStamp.idx,1);
+  selectedStamp=null;renderStamps();toast('Đã xoá con dấu');
+}
+function resizeStamp(delta){
+  if(!selectedStamp){toast('Chọn con dấu trước');return;}
+  const st=cur.stamps[selectedStamp.page][selectedStamp.idx];
+  st.wr=Math.max(.06,Math.min(.9,st.wr+delta*0.05));
+  renderStamps();highlightSel();
+}
+
+/* ===== FLATTEN ===== */
+function renderStampedPage(pageIdx){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=async()=>{
+      const NW=img.naturalWidth, NH=img.naturalHeight;
+      const c=document.createElement('canvas');c.width=NW;c.height=NH;
+      const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+      for(const st of (cur.stamps[pageIdx]||[])){
+        if(st.kind!=='seal' && !st.src) st.src=buildStampDataURL();
+        const wr = st.wr!=null ? st.wr : (st.kind==='seal'?SEAL_WR:STAMP_WR);
+        const w=wr*NW;
+        const simg=await loadImg(st.src);
+        const h=w*(simg.naturalHeight/simg.naturalWidth);
+        ctx.drawImage(simg, st.xr*NW, st.yr*NH, w, h);
+      }
+      res(c);
+    };
+    img.src=cur.pages[pageIdx];
+  });
+}
+function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src;});}
+
+/* ===== SAVE ===== */
+let pendingApproveName='';
+async function saveDoc(approve){
+  const name=document.getElementById('saveName').value.trim()||cur.name;
+  if(approve){
+    pendingApproveName=name;
+    if(localStorage.getItem('ideco_appr_ok')==='1'){ commitSave(name,true); return; }
+    openModal('apprModal');return;
+  }
+  await commitSave(name,false);
+}
+function confirmApprove(){
+  if(document.getElementById('apprPwd').value!==APP_PASSWORD){
+    document.getElementById('apprErr').textContent="Sai mật khẩu ký duyệt";return;}
+  if(document.getElementById('rememberPwd').checked)
+    localStorage.setItem('ideco_appr_ok','1');
+  closeModal('apprModal');document.getElementById('apprPwd').value='';
+  commitSave(pendingApproveName,true);
+}
+async function commitSave(name,approved){
+  toast('Đang lưu lên hệ thống…');
+  try{
+    const outPages=[];
+    for(let i=0;i<cur.pages.length;i++){
+      if(approved){outPages.push((await renderStampedPage(i)).toDataURL('image/jpeg',0.85));}
+      else outPages.push(cur.pages[i]);
+    }
+    const id=cur.id||db.ref('documents').push().key;
+    await db.ref('documents/'+id).set({
+      name,type:cur.type,
+      pages:approved?outPages:cur.pages,
+      rawPages:cur.pages,
+      stamps:cur.stamps,
+      approved,updated:Date.now(),
+      approvedAt:approved?Date.now():(cur.approvedAt||null)
+    });
+    toast(approved?'✅ Đã duyệt & lưu lên hệ thống':'💾 Đã lưu (chờ duyệt)');
+    closeEditor();
+  }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
+}
+
+/* ===== OPEN / DELETE ===== */
+function openDoc(id){
+  const d=docs[id];if(!d)return;
+  const stamps=d.stamps||{};
+  // migrate any legacy {x,y,scale} stamps to normalized {xr,yr,wr}
+  Object.values(stamps).forEach(list=>(list||[]).forEach(st=>{
+    if(st.xr==null && st.x!=null){ st.xr=0.4; st.yr=0.42; st.wr=(st.kind==='seal'?SEAL_WR:STAMP_WR); }
+  }));
+  cur={id,name:d.name,type:d.type,pages:(d.rawPages||d.pages).slice(),stamps,
+    approved:d.approved,approvedAt:d.approvedAt};
+  curPage=0;selectedStamp=null;openEditor();
+}
+function delDoc(id){if(!confirm('Xoá tài liệu này?'))return;
+  db.ref('documents/'+id).remove().then(()=>toast('Đã xoá'));}
+
+/* ===== DOWNLOAD ===== */
+async function downloadCurrent(){
+  toast('Đang tạo file…');
+  const canvases=[];
+  for(let i=0;i<cur.pages.length;i++)canvases.push(await renderStampedPage(i));
+  await outputCanvases(canvases,cur.type,document.getElementById('saveName').value.trim()||cur.name);
+}
+async function downloadDoc(id){
+  const d=docs[id];if(!d)return;toast('Đang chuẩn bị file…');
+  const canvases=[];
+  for(const p of d.pages)canvases.push(await loadCanvas(p));
+  await outputCanvases(canvases,d.type,d.name);
+}
+function loadCanvas(src){return new Promise(res=>{const img=new Image();
+  img.onload=()=>{const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;
+    c.getContext('2d').drawImage(img,0,0);res(c);};img.src=src;});}
+async function outputCanvases(canvases,type,name){
+  if(type==='pdf'||canvases.length>1){
+    const {jsPDF}=window.jspdf;const first=canvases[0];
+    const pdf=new jsPDF({orientation:first.width>first.height?'l':'p',unit:'px',format:[first.width,first.height]});
+    canvases.forEach((c,i)=>{if(i>0)pdf.addPage([c.width,c.height],c.width>c.height?'l':'p');
+      pdf.addImage(c.toDataURL('image/jpeg',0.9),'JPEG',0,0,c.width,c.height);});
+    pdf.save(name+'_DaDuyet.pdf');
+  }else{const a=document.createElement('a');a.href=canvases[0].toDataURL('image/png');
+    a.download=name+'_DaDuyet.png';a.click();}
+  toast('⬇ Đã tải xuống');
+}
+
+/* ===== BROADCAST (push notifications to embedded widget) ===== */
+// Writes to broadcasts/{live|pending}. Widget listens & shows popup.
+// A fresh timestamp makes late-arriving viewers see it too (catch-up).
+function broadcastLive(){
+  const approved=Object.entries(docs).filter(([id,d])=>d.approved).length;
+  if(!approved){toast('Chưa có tài liệu đã duyệt để thông báo');return;}
+  db.ref('broadcasts/live').set({
+    ts:Date.now(),
+    title:'NỘI DUNG VĂN BẢN ĐÃ DUYỆT',
+    count:approved
+  }).then(()=>toast(`📢 Đã phát thông báo LIVE (${approved} văn bản đã duyệt)`))
+    .catch(e=>toast('Lỗi: '+e.message));
+}
+function broadcastPending(id){
+  const d=docs[id];if(!d)return;
+  db.ref('broadcasts/pending').set({
+    ts:Date.now(),
+    title:'XIN PHÉP CHỜ DUYỆT',
+    lastDoc:d.name
+  }).then(()=>toast('🔔 Đã gửi thông báo XIN DUYỆT'))
+    .catch(e=>toast('Lỗi: '+e.message));
+}
+
+/* ===== MODAL ===== */
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');
+  document.getElementById('apprErr').textContent='';}
+</script>
+</body>
+</html>
