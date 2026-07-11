@@ -72,10 +72,36 @@
   .modal-bg.show{display:flex}
   .modal{background:#fff;border-radius:16px;padding:22px;max-width:420px;width:100%}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
-  .size-ctrl{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);
-    border-radius:8px;padding:4px 8px}
-  .size-ctrl button{border:none;background:var(--red);color:#fff;width:26px;height:26px;border-radius:6px;
-    font-size:16px;cursor:pointer;font-weight:700}
+  .size-ctrl{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
+    border-radius:8px;padding:6px 10px;flex:1;min-width:180px}
+  .size-ctrl button{border:none;background:var(--red);color:#fff;width:30px;height:30px;border-radius:6px;
+    font-size:18px;cursor:pointer;font-weight:700;flex-shrink:0}
+
+  /* ===== Thanh trượt (cỡ dấu / phóng to) — to & dễ kéo trên di động ===== */
+  input[type=range]{-webkit-appearance:none;appearance:none;flex:1;width:auto;min-width:70px;height:6px;
+    border-radius:4px;background:var(--line);padding:0;outline:none;touch-action:pan-x}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;
+    border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--red);
+    border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer}
+  input[type=range]::-moz-range-track{height:6px;border-radius:4px;background:var(--line)}
+
+  .zoom-ctrl{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
+    border-radius:10px;padding:8px 10px;margin-bottom:10px;flex-wrap:wrap}
+  .zoom-ctrl .zbtn{border:none;background:#4b5563;color:#fff;width:32px;height:32px;border-radius:8px;
+    font-size:18px;font-weight:700;cursor:pointer;flex-shrink:0}
+  .zoom-ctrl input[type=range]{min-width:100px}
+
+  @media (max-width:640px){
+    .toolbar{gap:10px}
+    .size-ctrl{width:100%}
+    .zoom-ctrl{width:100%}
+    .stage-wrap{max-height:60vh;padding:10px}
+    .btn.sm{padding:9px 14px;font-size:14px}
+    input[type=range]::-webkit-slider-thumb{width:30px;height:30px}
+    input[type=range]::-moz-range-thumb{width:30px;height:30px}
+    .stamp{touch-action:none}
+  }
   .hint{background:#eef6ff;border:1px solid #cfe4fb;color:#1e5a99;padding:10px 12px;border-radius:10px;
     font-size:13px;margin-bottom:12px}
   .seal-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
@@ -171,7 +197,7 @@
         <b id="edName" style="font-size:15px"></b>
       </div>
 
-      <div class="hint">💡 Thêm con dấu <b>"ĐÃ DUYỆT"</b> hoặc tải <b>ảnh PNG chữ ký/con dấu</b> để chèn vào văn bản/ảnh. Kéo đến vị trí bất kỳ, chỉnh cỡ bằng +/−, xoá dấu đang chọn. Xong bấm lưu.</div>
+      <div class="hint">💡 Thêm con dấu <b>"ĐÃ DUYỆT"</b> hoặc tải <b>ảnh PNG chữ ký/con dấu</b> để chèn vào văn bản/ảnh. Kéo đến vị trí bất kỳ, chỉnh cỡ bằng thanh trượt, xoá dấu đang chọn. Nếu ảnh nhỏ khó bấm, kéo thanh <b>Phóng to xem</b> bên dưới hoặc chụm 2 ngón tay trên ảnh. Xong bấm lưu.</div>
 
       <div class="toolbar">
         <button class="btn green sm" onclick="addStamp('text')">➕ Dấu "Đã Duyệt"</button>
@@ -179,8 +205,10 @@
         <input type="file" id="sealInp" accept="image/png,image/*" style="display:none">
         <div class="size-ctrl">
           <span class="muted">Cỡ dấu</span>
-          <button onclick="resizeStamp(-.1)">−</button>
-          <button onclick="resizeStamp(.1)">+</button>
+          <button onclick="nudgeStampSize(-5)">−</button>
+          <input type="range" id="stampSizeSlider" min="6" max="90" value="26" step="1" oninput="setStampSize(this.value)">
+          <button onclick="nudgeStampSize(5)">+</button>
+          <span class="muted" id="stampSizeVal" style="min-width:38px;text-align:right">26%</span>
         </div>
         <button class="btn gray sm" onclick="removeStamp()">🗑 Xoá dấu đang chọn</button>
       </div>
@@ -196,7 +224,17 @@
         <button class="btn ghost sm" onclick="gotoPage(curPage+1)">›</button>
       </div>
 
-      <div class="stage-wrap"><div id="stage"></div></div>
+      <div class="zoom-ctrl" id="zoomCtrl">
+        <span class="muted">🔍 Phóng to xem</span>
+        <button class="zbtn" onclick="nudgeZoom(-25)">−</button>
+        <input type="range" id="zoomSlider" min="50" max="400" value="100" step="5" oninput="setZoom(this.value)">
+        <button class="zbtn" onclick="nudgeZoom(25)">+</button>
+        <span class="muted" id="zoomVal" style="min-width:44px;text-align:right">100%</span>
+        <button class="btn ghost sm" onclick="resetZoom()">Vừa khung</button>
+      </div>
+
+      <div class="stage-wrap" id="stageWrap"><div id="stage"></div></div>
+      <div class="muted" style="text-align:center;margin-top:6px">💡 Kéo thanh trượt để phóng to tài liệu cho dễ bấm, hoặc chụm 2 ngón tay để zoom ngay trên ảnh.</div>
 
       <div class="row" style="margin-top:14px">
         <div style="flex:1;min-width:200px">
@@ -406,6 +444,8 @@ let cur = null;
 let curPage = 0;
 let selectedStamp = null;
 let seals = [];
+let baseFitScale = 1;   // tỉ lệ co vừa khung màn hình
+let zoomFactor = 1;     // hệ số phóng to thêm do người dùng chọn (100% = vừa khung)
 const STAMP_BASE_W = 190;
 const SEAL_BASE_W  = 180;
 let curNatW=0, curNatH=0;
@@ -553,9 +593,12 @@ function renderPage(){
     stage.style.width=img.naturalWidth+'px';stage.style.height=img.naturalHeight+'px';
     curNatW=img.naturalWidth;curNatH=img.naturalHeight;
     const wrapW=stage.parentElement.clientWidth-28;
-    const scale=img.naturalWidth>wrapW?wrapW/img.naturalWidth:1;
-    stage.style.transform=`scale(${scale})`;
-    stage.style.marginBottom=(img.naturalHeight*(scale-1))+'px';
+    baseFitScale=img.naturalWidth>wrapW?wrapW/img.naturalWidth:1;
+    zoomFactor=1;
+    const zs=document.getElementById('zoomSlider');
+    if(zs)zs.value=100;
+    updateZoomLabel(100);
+    applyStageTransform();
     renderStamps();
   };
   img.src=cur.pages[curPage];stage.appendChild(img);
@@ -565,6 +608,48 @@ function renderPage(){
     document.getElementById('pgtot').textContent=cur.pages.length;}
   else nav.style.display='none';
 }
+/* ===== PHÓNG TO XEM (thanh trượt + chụm 2 ngón) — cho ảnh nhỏ dễ thao tác trên di động ===== */
+function applyStageTransform(){
+  const stage=document.getElementById('stage');
+  const finalScale=baseFitScale*zoomFactor;
+  stage.style.transform=`scale(${finalScale})`;
+  stage.style.marginBottom=(stage.offsetHeight*(finalScale-1))+'px';
+}
+function updateZoomLabel(pct){
+  const lbl=document.getElementById('zoomVal');
+  if(lbl)lbl.textContent=Math.round(pct)+'%';
+}
+function setZoom(pct){
+  pct=Math.max(50,Math.min(400,Number(pct)));
+  zoomFactor=pct/100;
+  const zs=document.getElementById('zoomSlider');
+  if(zs)zs.value=pct;
+  updateZoomLabel(pct);
+  applyStageTransform();
+}
+function nudgeZoom(delta){
+  const zs=document.getElementById('zoomSlider');
+  setZoom((zs?Number(zs.value):100)+delta);
+}
+function resetZoom(){ setZoom(100); }
+
+/* --- Chụm 2 ngón tay để phóng to/thu nhỏ ngay trên tài liệu --- */
+(function initPinchZoom(){
+  const wrap=document.getElementById('stageWrap');
+  let startDist=0, startZoom=1;
+  function dist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);}
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){startDist=dist(e.touches);startZoom=zoomFactor;}
+  },{passive:true});
+  wrap.addEventListener('touchmove',e=>{
+    if(e.touches.length===2 && startDist>0){
+      e.preventDefault();
+      const ratio=dist(e.touches)/startDist;
+      setZoom(Math.round(startZoom*ratio*100));
+    }
+  },{passive:false});
+  wrap.addEventListener('touchend',e=>{if(e.touches.length<2)startDist=0;});
+})();
 /* Draw the "ĐÃ DUYỆT" stamp on a real canvas → reliable Vietnamese text
    both on screen and in the exported file. Returns a PNG dataURL. */
 function buildStampDataURL(){
@@ -605,7 +690,7 @@ function makeStampEl(st,idx){
   el.style.top =(st.yr*curNatH)+'px';
   el.style.width=w+'px';
   el.innerHTML = `<img src="${st.src}">`;
-  el.addEventListener('pointerdown',e=>{selectedStamp={page:curPage,idx};highlightSel();startDrag(e,el,st);});
+  el.addEventListener('pointerdown',e=>{selectedStamp={page:curPage,idx};highlightSel();syncStampSizeSlider();startDrag(e,el,st);});
   if(selectedStamp&&selectedStamp.page===curPage&&selectedStamp.idx===idx)
     el.style.outline='2px dashed #1a9d4b';
   return el;
@@ -637,18 +722,35 @@ function addStamp(kind,src){
   st.src = kind==='seal' ? src : buildStampDataURL();
   cur.stamps[curPage].push(st);
   selectedStamp={page:curPage,idx:cur.stamps[curPage].length-1};
-  renderStamps();highlightSel();
+  renderStamps();highlightSel();syncStampSizeSlider();
 }
 function removeStamp(){
   if(!selectedStamp){toast('Chưa chọn con dấu');return;}
   cur.stamps[selectedStamp.page].splice(selectedStamp.idx,1);
   selectedStamp=null;renderStamps();toast('Đã xoá con dấu');
 }
-function resizeStamp(delta){
-  if(!selectedStamp){toast('Chọn con dấu trước');return;}
+/* ===== CỠ DẤU bằng thanh trượt — kéo để tăng/giảm, dễ dùng trên di động ===== */
+function syncStampSizeSlider(){
+  const s=document.getElementById('stampSizeSlider'), v=document.getElementById('stampSizeVal');
+  if(!selectedStamp){return;}
   const st=cur.stamps[selectedStamp.page][selectedStamp.idx];
-  st.wr=Math.max(.06,Math.min(.9,st.wr+delta*0.05));
+  if(!st)return;
+  const pct=Math.round(st.wr*100);
+  if(s)s.value=pct;
+  if(v)v.textContent=pct+'%';
+}
+function setStampSize(pct){
+  if(!selectedStamp){toast('Chọn con dấu trước');return;}
+  pct=Math.max(6,Math.min(90,Number(pct)));
+  const st=cur.stamps[selectedStamp.page][selectedStamp.idx];
+  st.wr=pct/100;
+  const v=document.getElementById('stampSizeVal');
+  if(v)v.textContent=Math.round(pct)+'%';
   renderStamps();highlightSel();
+}
+function nudgeStampSize(delta){
+  const s=document.getElementById('stampSizeSlider');
+  setStampSize((s?Number(s.value):26)+delta);
 }
 
 /* ===== FLATTEN ===== */
