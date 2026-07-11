@@ -84,6 +84,47 @@
   .seal-chip img{width:76px;height:52px;object-fit:contain;cursor:pointer}
   .seal-chip .x{position:absolute;top:-8px;right:-8px;background:var(--red);color:#fff;
     border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;line-height:1}
+
+  /* ===== Nút mở tab Soạn đề xuất (trên header) ===== */
+  .hdr-compose{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)}
+
+  /* ===== TAB SOẠN ĐỀ XUẤT ===== */
+  #compose{display:none}
+  .cmp-toolbar{display:flex;flex-wrap:wrap;gap:5px;align-items:center;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:8px;position:sticky;top:60px;z-index:40;box-shadow:var(--shadow)}
+  .cmp-toolbar select{width:auto;padding:7px 8px;font-size:13px}
+  .cmp-toolbar input[type=color]{width:40px;height:36px;padding:2px;border:1px solid var(--line);
+    border-radius:8px;cursor:pointer;background:#fff}
+  .cmp-tb{width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:15px;
+    display:inline-flex;align-items:center;justify-content:center;color:var(--txt);cursor:pointer}
+  .cmp-tb:hover{background:#fff0ee;border-color:var(--red)}
+  .cmp-sep{width:1px;height:26px;background:var(--line);margin:0 3px}
+  .cmp-zone{overflow:hidden;padding:14px 6px;background:#dfe4e9;border-radius:12px;margin-top:12px}
+  #cmpScaler{transform-origin:top left}
+  #cmpSheet{width:794px;min-height:1123px;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.2);
+    padding:50px 62px 58px;font-family:"Times New Roman",Times,serif;font-size:14pt;color:#111;line-height:1.55}
+  #cmpSheet .vhead{display:flex;gap:16px;align-items:flex-start;margin-bottom:4px}
+  #cmpSheet .vhead img{width:88px;flex-shrink:0}
+  #cmpSheet .co{font-size:11pt;font-weight:bold;text-transform:uppercase;line-height:1.35;flex-shrink:0}
+  #cmpSheet .co small{display:block;font-weight:normal;text-transform:none;font-size:9.5pt}
+  #cmpSheet .nat{text-align:right;flex:1;font-size:11pt;line-height:1.35}
+  #cmpSheet .nat b{display:block;text-transform:uppercase}
+  #cmpSheet .nat u{font-weight:bold;text-decoration:none;border-bottom:1.4px solid #111;padding-bottom:1px;
+    display:inline-block;margin-top:2px}
+  #cmpSheet .ttl{text-align:center;margin:24px 0 3px;font-size:17pt;font-weight:bold;text-transform:uppercase;letter-spacing:.5px}
+  #cmpSheet .sub{text-align:center;font-style:italic;font-size:11pt;margin-bottom:16px;color:#333}
+  #cmpSheet .shmeta{margin:0 0 14px;font-size:13pt}
+  #cmpSheet .shmeta div{margin-bottom:7px}
+  #cmpEditor{min-height:360px;outline:none;padding:6px 2px;font-size:14pt;border:1px dashed transparent}
+  #cmpEditor:focus{border-color:#bcd8c6}
+  #cmpEditor:empty:before{content:"Bấm vào đây và nhập nội dung đề xuất…";color:#9aa1ab;font-style:italic}
+  #cmpSign{display:flex;justify-content:space-between;gap:24px;margin-top:42px;text-align:center;font-size:13pt}
+  #cmpSign .col{flex:1}
+  #cmpSign .cap{font-weight:bold;text-transform:uppercase}
+  #cmpSign .it{font-style:italic;font-size:11pt;color:#333}
+  #cmpSign .sigimg{height:80px;display:flex;align-items:center;justify-content:center;margin:6px 0 2px}
+  #cmpSign .sigimg img{max-height:80px;max-width:200px}
+  #cmpSign .signame{font-weight:bold;min-height:22px}
 </style>
 </head>
 <body>
@@ -91,6 +132,7 @@
 <header>
   <img src="https://cdn.imgpile.com/f/9nSpNq5_o.png" onerror="this.style.display='none'" alt="">
   <h1>Duyệt Tài Liệu <span class="sub">IDECO</span></h1>
+  <button class="btn ghost sm hdr-compose" onclick="openCompose()">✍️ Soạn đề xuất</button>
   <button class="btn ghost sm" onclick="broadcastLive()"
     style="color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)">
     📢 Thông báo Live
@@ -169,6 +211,152 @@
     </div>
   </div>
 
+  <!-- COMPOSE — Soạn đề xuất -->
+  <div id="compose">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <button class="btn ghost sm" onclick="closeCompose()">← Quay lại</button>
+        <b style="font-size:15px">✍️ Soạn văn bản đề xuất</b>
+      </div>
+    </div>
+
+    <!-- FORM 1: KHAI BÁO THÔNG TIN -->
+    <div class="card">
+      <b style="display:block;margin-bottom:10px">📋 1. Khai báo thông tin đề xuất</b>
+      <div class="row">
+        <div style="flex:2;min-width:200px">
+          <label>Người lập đề xuất *</label>
+          <input id="cmpName" placeholder="Nhập họ tên nhân viên" oninput="cmpSync()">
+        </div>
+        <div style="flex:1;min-width:150px">
+          <label>Bộ phận *</label>
+          <select id="cmpDept" onchange="cmpSync()">
+            <option>Kinh doanh</option><option>Kế toán</option><option>Kho</option>
+            <option>Giao nhận</option><option>Nhân sự</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:150px">
+          <label>Ngày lập đề xuất *</label>
+          <input type="date" id="cmpDate" onchange="cmpSync()">
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div style="flex:2;min-width:200px">
+          <label>Về việc (V/v)</label>
+          <input id="cmpSubject" placeholder="VD: Đề xuất mua thêm tủ lạnh bảo quản vaccine" oninput="cmpSync()">
+        </div>
+        <div style="flex:1;min-width:120px">
+          <label>Số văn bản</label>
+          <input id="cmpNo" placeholder="VD: 15" oninput="cmpSync()">
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM 2: SOẠN NỘI DUNG -->
+    <div class="card">
+      <b style="display:block;margin-bottom:10px">📝 2. Soạn nội dung (định dạng như Microsoft Word)</b>
+      <div class="cmp-toolbar">
+        <select id="cmpFont" title="Font chữ">
+          <option value="Times New Roman" selected>Times New Roman</option>
+          <option value="Arial">Arial</option>
+          <option value="Tahoma">Tahoma</option>
+          <option value="Calibri">Calibri</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Courier New">Courier New</option>
+        </select>
+        <select id="cmpSize" title="Cỡ chữ">
+          <option value="1">10</option><option value="2">12</option>
+          <option value="3" selected>14</option><option value="4">16</option>
+          <option value="5">20</option><option value="6">26</option><option value="7">36</option>
+        </select>
+        <input type="color" id="cmpColor" value="#111111" title="Màu chữ">
+        <span class="cmp-sep"></span>
+        <button class="cmp-tb" data-cmd="bold" title="Đậm"><b>B</b></button>
+        <button class="cmp-tb" data-cmd="italic" title="Nghiêng"><i>I</i></button>
+        <button class="cmp-tb" data-cmd="underline" title="Gạch dưới"><u>U</u></button>
+        <button class="cmp-tb" data-cmd="strikeThrough" title="Gạch ngang"><s>S</s></button>
+        <span class="cmp-sep"></span>
+        <button class="cmp-tb" data-cmd="justifyLeft" title="Canh trái">⯇</button>
+        <button class="cmp-tb" data-cmd="justifyCenter" title="Canh giữa">≡</button>
+        <button class="cmp-tb" data-cmd="justifyRight" title="Canh phải">⯈</button>
+        <button class="cmp-tb" data-cmd="justifyFull" title="Canh đều">▤</button>
+        <span class="cmp-sep"></span>
+        <button class="cmp-tb" data-cmd="insertUnorderedList" title="Danh sách chấm">•</button>
+        <button class="cmp-tb" data-cmd="insertOrderedList" title="Danh sách số">1.</button>
+        <span class="cmp-sep"></span>
+        <button class="cmp-tb" data-cmd="undo" title="Hoàn tác">↶</button>
+        <button class="cmp-tb" data-cmd="redo" title="Làm lại">↷</button>
+      </div>
+
+      <!-- Trang A4 xem trước, tự co theo màn hình -->
+      <div class="cmp-zone" id="cmpZone">
+        <div id="cmpScaler"><div id="cmpSheet">
+          <div class="vhead">
+            <img src="https://cdn.imgpile.com/f/Yl3ncwx_xl.png" alt="logo" crossorigin="anonymous">
+            <div class="co">CÔNG TY TNHH TM DV<br>KẾT GIAO PHÁT TRIỂN QUỐC TẾ
+              <small>Số: <span id="shNo">……</span>/ĐX-IDECO</small>
+            </div>
+            <div class="nat"><b>Cộng hòa xã hội chủ nghĩa Việt Nam</b><u>Độc lập – Tự do – Hạnh phúc</u></div>
+          </div>
+          <div class="ttl">Đề xuất</div>
+          <div class="sub">(V/v: <span id="shSubject">…………………………………………</span>)</div>
+
+          <div class="shmeta">
+            <div><b>Người lập đề xuất:</b> <span id="shName">………………………………</span></div>
+            <div><b>Bộ phận:</b> <span id="shDept">Kinh doanh</span>&nbsp;&nbsp;&nbsp;<b>Ngày lập:</b> <span id="shDate">…/…/……</span></div>
+          </div>
+
+          <div id="cmpEditor" contenteditable="true"></div>
+
+          <div id="cmpSign">
+            <div class="col">
+              <div class="cap">Người lập đề xuất</div>
+              <div class="it">(Ký, ghi rõ họ tên)</div>
+              <div class="sigimg"></div>
+              <div class="signame" id="shSignName">&nbsp;</div>
+            </div>
+            <div class="col">
+              <div class="cap">Đã xác nhận</div>
+              <div class="it">(Người phụ trách / được phân quyền)</div>
+              <div class="sigimg" id="cmpOkSigImg"></div>
+              <div class="signame" id="shOkName">&nbsp;</div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- FORM 3: XÁC NHẬN CỦA QUẢN LÝ (KHÔNG CẦN MẬT KHẨU) -->
+    <div class="card">
+      <b style="display:block;margin-bottom:6px">✅ 3. Xác nhận của cấp quản lý</b>
+      <div class="muted" style="margin-bottom:10px">Người phụ trách / người được phân quyền gõ tên xác nhận trực tiếp — <b>không cần mật khẩu</b>. Mật khẩu chỉ dùng ở bước "Đóng dấu &amp; Duyệt" cuối cùng.</div>
+      <div class="row">
+        <div style="flex:2;min-width:200px">
+          <label>Người xác nhận</label>
+          <input id="cmpOkName" placeholder="VD: Thương Hoài - Quản lý" oninput="cmpSync()">
+        </div>
+        <div style="flex:2;min-width:200px">
+          <label>Ảnh chữ ký (tuỳ chọn)</label>
+          <select id="cmpOkSigPick"><option value="">— Không chèn chữ ký —</option></select>
+        </div>
+        <div style="flex:0">
+          <label>&nbsp;</label>
+          <button class="btn sm" onclick="cmpSigInp.click()">🖼 Tải chữ ký mới</button>
+          <input type="file" id="cmpSigInp" accept="image/png,image/*" style="display:none">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <button class="btn" style="background:#e08600" onclick="composeSave()">💾 Lưu (chờ duyệt)</button>
+        <button class="btn ghost" onclick="composePdf()">⬇ Tải PDF bản nháp</button>
+        <button class="btn gray" onclick="composeClear()">🧹 Soạn mới</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id="toast" class="toast"></div>
@@ -193,6 +381,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 /* ===== CONFIG ===== */
 const APP_PASSWORD = "minhtriet1973";
@@ -595,6 +784,188 @@ function broadcastPending(id){
 function openModal(id){document.getElementById(id).classList.add('show');}
 function closeModal(id){document.getElementById(id).classList.remove('show');
   document.getElementById('apprErr').textContent='';}
+
+/* ============================================================
+   TAB SOẠN ĐỀ XUẤT (bổ sung — không đổi chức năng gốc)
+   1. Form khai báo: Người lập, Bộ phận, Ngày lập, V/v, Số VB
+   2. Soạn nội dung kiểu Word + trang A4 xem trước (tự điền từ form)
+   3. Xác nhận của quản lý: gõ tên (VD: Thương Hoài - Quản lý)
+      + chèn/tải ảnh chữ ký — KHÔNG cần mật khẩu
+   "Lưu (chờ duyệt)" → documents (approved:false);
+   bước "Đóng dấu & Duyệt" cuối vẫn qua mật khẩu như bản gốc.
+============================================================ */
+const CMP_LOGO='https://cdn.imgpile.com/f/Yl3ncwx_xl.png';
+
+function openCompose(){
+  document.getElementById('home').style.display='none';
+  document.getElementById('editor').style.display='none';
+  document.getElementById('compose').style.display='block';
+  if(!document.getElementById('cmpDate').value)
+    document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
+  cmpFillSigPick();cmpSync();
+  window.scrollTo(0,0);
+  requestAnimationFrame(cmpFit);
+}
+function closeCompose(){
+  document.getElementById('compose').style.display='none';
+  document.getElementById('home').style.display='block';
+}
+
+/* --- Trang A4 tự co vừa màn hình (điện thoại vẫn thấy đủ) --- */
+function cmpFit(){
+  const zone=document.getElementById('cmpZone');
+  const scaler=document.getElementById('cmpScaler');
+  const sheet=document.getElementById('cmpSheet');
+  if(!zone||zone.offsetParent===null)return;
+  const avail=zone.clientWidth-12;
+  const sc=Math.min(1,avail/794);
+  scaler.style.transform='scale('+sc+')';
+  scaler.style.width=(794*sc)+'px';
+  scaler.style.margin='0 auto';
+  scaler.style.height=(sheet.offsetHeight*sc)+'px';
+}
+window.addEventListener('resize',cmpFit);
+
+/* --- Đồng bộ form khai báo → văn bản A4 --- */
+function cmpSync(){
+  const g=id=>document.getElementById(id);
+  const name=g('cmpName').value.trim();
+  g('shName').textContent = name||'………………………………';
+  g('shDept').textContent = g('cmpDept').value;
+  g('shDate').textContent = g('cmpDate').value
+    ? new Date(g('cmpDate').value).toLocaleDateString('vi-VN') : '…/…/……';
+  g('shSubject').textContent = g('cmpSubject').value.trim()||'…………………………………………';
+  g('shNo').textContent = g('cmpNo').value.trim()||'……';
+  g('shSignName').textContent = name||'\u00a0';
+  g('shOkName').textContent = g('cmpOkName').value.trim()||'\u00a0';
+  requestAnimationFrame(cmpFit);
+}
+
+/* --- Thanh công cụ kiểu Word --- */
+document.execCommand('styleWithCSS',false,true);
+document.querySelectorAll('.cmp-tb').forEach(b=>{
+  b.addEventListener('mousedown',e=>e.preventDefault()); // giữ vùng chọn khi bấm nút
+  b.addEventListener('click',()=>{document.execCommand(b.dataset.cmd,false,null);
+    document.getElementById('cmpEditor').focus();});
+});
+document.getElementById('cmpFont').addEventListener('change',e=>{
+  document.execCommand('fontName',false,e.target.value);document.getElementById('cmpEditor').focus();});
+document.getElementById('cmpSize').addEventListener('change',e=>{
+  document.execCommand('fontSize',false,e.target.value);document.getElementById('cmpEditor').focus();});
+document.getElementById('cmpColor').addEventListener('input',e=>{
+  document.execCommand('foreColor',false,e.target.value);document.getElementById('cmpEditor').focus();});
+document.getElementById('cmpEditor').addEventListener('input',()=>requestAnimationFrame(cmpFit));
+
+/* --- Chữ ký người xác nhận: chọn từ kho hoặc tải mới (không mật khẩu) --- */
+function cmpFillSigPick(){
+  const sel=document.getElementById('cmpOkSigPick');const cur=sel.value;
+  sel.innerHTML='<option value="">— Không chèn chữ ký —</option>';
+  (seals||[]).forEach(s=>{
+    const o=document.createElement('option');o.value=s.src;o.textContent=s.name||'Chữ ký';sel.appendChild(o);
+  });
+  sel.value=cur;
+}
+document.getElementById('cmpOkSigPick').addEventListener('change',e=>{
+  document.getElementById('cmpOkSigImg').innerHTML=
+    e.target.value?'<img src="'+e.target.value+'">':'';
+});
+// tự làm mới dropdown khi kho chữ ký trên Firebase thay đổi
+db.ref('signatures').on('value',()=>{ setTimeout(cmpFillSigPick,0); });
+// tải chữ ký PNG mới ngay tại form xác nhận (lưu vào kho chung như bản gốc)
+const cmpSigInp=document.getElementById('cmpSigInp');
+cmpSigInp.addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  toast('Đang lưu chữ ký…');
+  const url=await imgToPngDataURL(await fileToDataURL(f),600,true);
+  const id=db.ref('signatures').push().key;
+  await db.ref('signatures/'+id).set({src:url,name:f.name.replace(/\.[^.]+$/,''),updated:Date.now()});
+  document.getElementById('cmpOkSigImg').innerHTML='<img src="'+url+'">';
+  setTimeout(()=>{cmpFillSigPick();document.getElementById('cmpOkSigPick').value=url;},300);
+  toast('✅ Đã lưu & chèn chữ ký');
+  cmpSigInp.value='';
+});
+
+/* --- Logo an toàn CORS: nạp về dataURL để render luôn có logo --- */
+(async function cmpPreloadLogo(){
+  const img=document.querySelector('#cmpSheet .vhead img');
+  try{
+    const r=await fetch('https://wsrv.nl/?url='+encodeURIComponent(CMP_LOGO.replace(/^https?:\/\//,''))+'&output=png');
+    if(!r.ok)throw 0;
+    const b=await r.blob();
+    const fr=new FileReader();fr.onload=()=>{img.src=fr.result;};fr.readAsDataURL(b);
+  }catch(e){/* giữ URL gốc, html2canvas sẽ thử useCORS */}
+})();
+
+/* --- Render trang A4 thành canvas (bỏ scale màn hình, xuất nét 2x) --- */
+async function cmpRenderSheet(){
+  const scaler=document.getElementById('cmpScaler');
+  const saved=scaler.style.transform;
+  scaler.style.transform='none';
+  try{
+    return await html2canvas(document.getElementById('cmpSheet'),
+      {scale:2,useCORS:true,backgroundColor:'#ffffff'});
+  }finally{
+    scaler.style.transform=saved;
+  }
+}
+function cmpDocName(){
+  const nm=document.getElementById('cmpName').value.trim()||'Không tên';
+  const dt=document.getElementById('cmpDate').value
+    ?new Date(document.getElementById('cmpDate').value).toLocaleDateString('vi-VN'):'';
+  return 'ĐỀ XUẤT - '+nm+' ('+document.getElementById('cmpDept').value+') '+dt;
+}
+
+/* --- Lưu (chờ duyệt): đẩy vào documents, không cần mật khẩu --- */
+async function composeSave(){
+  if(!document.getElementById('cmpName').value.trim()){toast('⚠️ Nhập tên người lập đề xuất (mục 1)');return;}
+  if(!document.getElementById('cmpEditor').textContent.trim()){toast('⚠️ Nội dung đề xuất đang trống (mục 2)');return;}
+  toast('Đang tạo văn bản…');
+  try{
+    const canvas=await cmpRenderSheet();
+    const page=canvas.toDataURL('image/jpeg',0.9);
+    const id=db.ref('documents').push().key;
+    await db.ref('documents/'+id).set({
+      name:cmpDocName(),type:'image',
+      pages:[page],rawPages:[page],stamps:{},
+      approved:false,updated:Date.now(),approvedAt:null,
+      meta:{
+        nguoiLap:document.getElementById('cmpName').value.trim(),
+        boPhan:document.getElementById('cmpDept').value,
+        ngayLap:document.getElementById('cmpDate').value,
+        xacNhan:document.getElementById('cmpOkName').value.trim()
+      }
+    });
+    toast('✅ Đã lưu — văn bản chuyển vào danh sách CHỜ DUYỆT');
+    closeCompose();
+  }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
+}
+
+/* --- Tải PDF bản nháp --- */
+async function composePdf(){
+  toast('Đang xuất PDF…');
+  try{
+    const canvas=await cmpRenderSheet();
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'p',unit:'px',format:[canvas.width,canvas.height]});
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.9),'JPEG',0,0,canvas.width,canvas.height);
+    pdf.save(cmpDocName()+'.pdf');
+    toast('⬇ Đã tải PDF');
+  }catch(err){toast('Lỗi: '+err.message);}
+}
+
+/* --- Soạn mới: chỉ hỏi khi đang có nội dung --- */
+function composeClear(){
+  const hasContent=document.getElementById('cmpEditor').textContent.trim()
+    ||document.getElementById('cmpName').value.trim();
+  if(hasContent && !confirm('Bắt đầu văn bản mới? Nội dung hiện tại sẽ bị xoá.'))return;
+  document.getElementById('cmpEditor').innerHTML='';
+  ['cmpName','cmpOkName','cmpSubject','cmpNo'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('cmpOkSigPick').value='';
+  document.getElementById('cmpOkSigImg').innerHTML='';
+  document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
+  cmpSync();
+  toast('🧹 Đã sẵn sàng soạn văn bản mới');
+}
 </script>
 </body>
 </html>
