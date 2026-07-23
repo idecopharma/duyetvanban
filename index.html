@@ -156,13 +156,17 @@
 <body>
 
 <header>
-  <img src="https://cdn.imgpile.com/f/GK3nMDF_xl.png" onerror="this.style.display='none'" alt="">
+  <img src="https://cdn.imgpile.com/f/9nSpNq5_o.png" onerror="this.style.display='none'" alt="">
   <h1>CÁC ĐỀ XUẤT- BẢNG GIÁ- BÁO GIÁ - NỘI DUNG KHÁC CẦN BGĐ <span class="sub">IDECO DUYỆT</span></h1>
   <button class="btn ghost sm hdr-compose" onclick="location.href='https://erp-ideco.skyit.vn/#/app/dashboard/main'" title="Quay lại ERP">🏠 HOME ERP</button>
   <button class="btn ghost sm hdr-compose" onclick="openCompose()">✍️ Soạn đề xuất</button>
   <button class="btn ghost sm" onclick="broadcastLive()"
     style="color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)">
     📢 Thông báo Live
+  </button>
+  <button class="btn ghost sm" onclick="stopBroadcast()" title="Gỡ popup thông báo trên tất cả máy đang xem"
+    style="color:#fff;border-color:rgba(255,180,180,.7);background:rgba(255,80,80,.18)">
+    🔕 Tắt thông báo
   </button>
 </header>
 
@@ -861,27 +865,31 @@ async function outputCanvases(canvases,type,name){
 }
 
 /* ===== BROADCAST (push notifications to embedded widget) ===== */
-// Writes to ONE single node broadcasts/current (field "kind" phân biệt live/pending).
-// Dùng 1 node duy nhất để widget chỉ có 1 listener → không còn tình trạng
-// 2 listener độc lập (live/pending) chạy đua và đè popup lên nhau khiến
-// mỗi máy hiện một nội dung khác nhau.
-// Timestamp mới giúp người vào sau (chưa xem) vẫn thấy lại thông báo (catch-up).
+// Writes to broadcasts/{live|pending}. Widget listens & shows popup.
+// A fresh timestamp makes late-arriving viewers see it too (catch-up).
 function broadcastLive(){
   const approved=Object.entries(docs).filter(([id,d])=>d.approved).length;
   if(!approved){toast('Chưa có tài liệu đã duyệt để thông báo');return;}
-  db.ref('broadcasts/current').set({
+  db.ref('broadcasts/live').set({
     ts:Date.now(),
-    kind:'live',
     title:'NỘI DUNG VĂN BẢN ĐÃ DUYỆT',
     count:approved
   }).then(()=>toast(`📢 Đã phát thông báo LIVE (${approved} văn bản đã duyệt)`))
     .catch(e=>toast('Lỗi: '+e.message));
 }
+// Xoá cả 2 node broadcast -> widget nhận sự kiện null và tự đóng popup/badge.
+function stopBroadcast(){
+  Promise.all([
+    db.ref('broadcasts/live').remove(),
+    db.ref('broadcasts/pending').remove(),
+    db.ref('broadcasts/current').remove()
+  ]).then(()=>toast('🔕 Đã tắt thông báo trên mọi máy đang xem'))
+    .catch(e=>toast('Lỗi: '+e.message));
+}
 function broadcastPending(id){
   const d=docs[id];if(!d)return;
-  db.ref('broadcasts/current').set({
+  db.ref('broadcasts/pending').set({
     ts:Date.now(),
-    kind:'pending',
     title:'XIN PHÉP CHỜ DUYỆT',
     lastDoc:d.name
   }).then(()=>toast('🔔 Đã gửi thông báo XIN DUYỆT'))
