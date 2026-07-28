@@ -116,6 +116,19 @@
 
   /* ===== TAB SOẠN ĐỀ XUẤT ===== */
   #compose{display:none}
+  /* ===== TAB BGĐ THÔNG BÁO ===== */
+  #notice{display:none}
+  #noticeCompose{display:none}
+  #ntcScaler{transform-origin:top left}
+  #ntcSheet{width:794px;min-height:1123px;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.2);
+    padding:50px 62px 58px;font-family:"Times New Roman",Times,serif;font-size:14pt;color:#111;line-height:1.55}
+  #ntcEditor{min-height:360px;outline:none;padding:6px 2px;font-size:14pt;border:1px dashed transparent}
+  #ntcEditor:focus{border-color:#bcd8c6}
+  #ntcEditor:empty:before{content:"Bấm vào đây và nhập nội dung thông báo…";color:#9aa1ab;font-style:italic}
+  .ntc-sign-row .it{font-style:italic;font-size:11pt;color:#333}
+  .ntc-sign-row .sigimg{height:80px;display:flex;align-items:center;justify-content:center;margin:6px 0 2px}
+  .ntc-sign-row .sigimg img{max-height:80px;max-width:200px}
+  .ntc-sign-row .signame{font-weight:bold;min-height:22px}
   .cmp-toolbar{display:flex;flex-wrap:wrap;gap:5px;align-items:center;background:#fff;border:1px solid var(--line);
     border-radius:12px;padding:8px;position:sticky;top:60px;z-index:40;box-shadow:var(--shadow)}
   .cmp-toolbar select{width:auto;padding:7px 8px;font-size:13px}
@@ -129,18 +142,19 @@
   #cmpScaler{transform-origin:top left}
   #cmpSheet{width:794px;min-height:1123px;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.2);
     padding:50px 62px 58px;font-family:"Times New Roman",Times,serif;font-size:14pt;color:#111;line-height:1.55}
-  #cmpSheet .vhead{display:flex;gap:16px;align-items:flex-start;margin-bottom:4px}
+  #cmpSheet .vhead, #ntcSheet .vhead{display:flex;gap:16px;align-items:flex-start;margin-bottom:4px}
   #cmpSheet .vhead img{width:88px;flex-shrink:0}
-  #cmpSheet .co{font-size:11pt;font-weight:bold;text-transform:uppercase;line-height:1.35;flex-shrink:0}
-  #cmpSheet .co small{display:block;font-weight:normal;text-transform:none;font-size:9.5pt}
-  #cmpSheet .nat{text-align:right;flex:1;font-size:11pt;line-height:1.35}
-  #cmpSheet .nat b{display:block;text-transform:uppercase}
-  #cmpSheet .nat u{font-weight:bold;text-decoration:none;border-bottom:1.4px solid #111;padding-bottom:1px;
+  #ntcSheet .vhead img{width:52px;flex-shrink:0;align-self:flex-start}
+  #cmpSheet .co, #ntcSheet .co{font-size:11pt;font-weight:bold;text-transform:uppercase;line-height:1.35;flex-shrink:0}
+  #cmpSheet .co small, #ntcSheet .co small{display:block;font-weight:normal;text-transform:none;font-size:9.5pt}
+  #cmpSheet .nat, #ntcSheet .nat{text-align:right;flex:1;font-size:11pt;line-height:1.35}
+  #cmpSheet .nat b, #ntcSheet .nat b{display:block;text-transform:uppercase}
+  #cmpSheet .nat u, #ntcSheet .nat u{font-weight:bold;text-decoration:none;border-bottom:1.4px solid #111;padding-bottom:1px;
     display:inline-block;margin-top:2px}
-  #cmpSheet .ttl{text-align:center;margin:24px 0 3px;font-size:17pt;font-weight:bold;text-transform:uppercase;letter-spacing:.5px}
-  #cmpSheet .sub{text-align:center;font-style:italic;font-size:11pt;margin-bottom:16px;color:#333}
-  #cmpSheet .shmeta{margin:0 0 14px;font-size:13pt}
-  #cmpSheet .shmeta div{margin-bottom:7px}
+  #cmpSheet .ttl, #ntcSheet .ttl{text-align:center;margin:24px 0 3px;font-size:17pt;font-weight:bold;text-transform:uppercase;letter-spacing:.5px}
+  #cmpSheet .sub, #ntcSheet .sub{text-align:center;font-style:italic;font-size:11pt;margin-bottom:16px;color:#333}
+  #cmpSheet .shmeta, #ntcSheet .shmeta{margin:0 0 14px;font-size:13pt}
+  #cmpSheet .shmeta div, #ntcSheet .shmeta div{margin-bottom:7px}
   #cmpEditor{min-height:360px;outline:none;padding:6px 2px;font-size:14pt;border:1px dashed transparent}
   #cmpEditor:focus{border-color:#bcd8c6}
   #cmpEditor:empty:before{content:"Bấm vào đây và nhập nội dung đề xuất…";color:#9aa1ab;font-style:italic}
@@ -156,17 +170,14 @@
 <body>
 
 <header>
-  <img src="https://cdn.imgpile.com/f/9nSpNq5_o.png" onerror="this.style.display='none'" alt="">
+  <img src="https://cdn.imgpile.com/f/GK3nMDF_xl.png" onerror="this.style.display='none'" alt="">
   <h1>CÁC ĐỀ XUẤT- BẢNG GIÁ- BÁO GIÁ - NỘI DUNG KHÁC CẦN BGĐ <span class="sub">IDECO DUYỆT</span></h1>
   <button class="btn ghost sm hdr-compose" onclick="location.href='https://erp-ideco.skyit.vn/#/app/dashboard/main'" title="Quay lại ERP">🏠 HOME ERP</button>
   <button class="btn ghost sm hdr-compose" onclick="openCompose()">✍️ Soạn đề xuất</button>
+  <button class="btn ghost sm hdr-compose" onclick="openNotice()">📣 BGĐ Thông báo</button>
   <button class="btn ghost sm" onclick="broadcastLive()"
     style="color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)">
     📢 Thông báo Live
-  </button>
-  <button class="btn ghost sm" onclick="stopBroadcast()" title="Gỡ popup thông báo trên tất cả máy đang xem"
-    style="color:#fff;border-color:rgba(255,180,180,.7);background:rgba(255,80,80,.18)">
-    🔕 Tắt thông báo
   </button>
 </header>
 
@@ -178,9 +189,9 @@
       <div class="drop" id="drop" onclick="fileInp.click()">
         <div class="ico">📤</div>
         <div style="font-weight:700;margin-top:6px">Tải tài liệu lên để duyệt</div>
-        <div class="muted" style="margin-top:4px">PDF · JPG · PNG — bấm hoặc kéo thả vào đây</div>
+        <div class="muted" style="margin-top:4px">PDF · JPG · PNG · Excel (XLSX/XLS) — bấm hoặc kéo thả vào đây</div>
       </div>
-      <input type="file" id="fileInp" accept="application/pdf,image/*" style="display:none">
+      <input type="file" id="fileInp" accept="application/pdf,image/*,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none">
     </div>
 
     <div class="card">
@@ -201,6 +212,7 @@
         <b id="edName" style="font-size:15px"></b>
       </div>
 
+      <div id="stampArea">
       <div class="hint">💡 Thêm con dấu <b>"ĐÃ DUYỆT"</b> hoặc tải <b>ảnh PNG chữ ký/con dấu</b> để chèn vào văn bản/ảnh. Kéo đến vị trí bất kỳ, chỉnh cỡ bằng thanh trượt, xoá dấu đang chọn. Nếu ảnh nhỏ khó bấm, kéo thanh <b>Phóng to xem</b> bên dưới hoặc chụm 2 ngón tay trên ảnh. Xong bấm lưu.</div>
 
       <div class="toolbar">
@@ -239,6 +251,14 @@
 
       <div class="stage-wrap" id="stageWrap"><div id="stage"></div></div>
       <div class="muted" style="text-align:center;margin-top:6px">💡 Kéo thanh trượt để phóng to tài liệu cho dễ bấm, hoặc chụm 2 ngón tay để zoom ngay trên ảnh.</div>
+      </div>
+
+      <div id="fileOnlyBox" style="display:none">
+        <div class="empty" id="fileOnlyInfo">
+          <div class="ico">📊</div>
+          Tệp Excel — không chỉnh sửa nội dung trực tiếp, chỉ xem trạng thái và bấm duyệt.
+        </div>
+      </div>
 
       <div class="row" style="margin-top:14px">
         <div style="flex:1;min-width:200px">
@@ -400,6 +420,152 @@
     </div>
   </div>
 
+  <!-- NOTICE — BGĐ Thông báo (dành cho Ban Giám Đốc công bố văn bản chính thức cho nhân viên) -->
+  <div id="notice">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <button class="btn ghost sm" onclick="closeNotice()">← Quay lại</button>
+        <b style="font-size:15px">📣 Thông báo của Ban Giám Đốc</b>
+      </div>
+      <div class="muted">Trang dành cho Ban Giám Đốc công bố văn bản/thông báo chính thức cho toàn thể nhân viên.</div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <b>Danh sách thông báo</b>
+        <button class="btn green sm" onclick="openNoticeCompose()">✍️ Soạn thông báo mới</button>
+      </div>
+      <div class="tabs" style="margin-top:12px">
+        <div class="tab active" data-nf="all" onclick="setNoticeFilter('all')">Tất cả</div>
+        <div class="tab" data-nf="wait" onclick="setNoticeFilter('wait')">Chờ duyệt</div>
+        <div class="tab" data-nf="ok" onclick="setNoticeFilter('ok')">Đã duyệt</div>
+      </div>
+      <div id="noticeList"></div>
+    </div>
+
+    <!-- FORM SOẠN THÔNG BÁO -->
+    <div id="noticeCompose">
+      <div class="card">
+        <b style="display:block;margin-bottom:10px">📋 1. Thông tin thông báo</b>
+        <div class="row">
+          <div style="flex:2;min-width:200px">
+            <label>Người ký / Ban hành *</label>
+            <input id="ntcName" placeholder="VD: Ban Giám Đốc" oninput="ntcSync()">
+          </div>
+          <div style="flex:1;min-width:150px">
+            <label>Ngày ban hành *</label>
+            <input type="date" id="ntcDate" onchange="ntcSync()">
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label>Số thông báo</label>
+            <input id="ntcNo" placeholder="VD: 08" oninput="ntcSync()">
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div style="flex:1">
+            <label>V/v (tiêu đề thông báo)</label>
+            <input id="ntcSubject" placeholder="VD: Thông báo lịch nghỉ lễ Quốc Khánh 2/9" oninput="ntcSync()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <b style="display:block;margin-bottom:10px">📝 2. Nội dung thông báo (định dạng như Microsoft Word)</b>
+        <div class="cmp-toolbar">
+          <select id="ntcFont" title="Font chữ">
+            <option value="Times New Roman" selected>Times New Roman</option>
+            <option value="Arial">Arial</option>
+            <option value="Tahoma">Tahoma</option>
+            <option value="Calibri">Calibri</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Courier New">Courier New</option>
+          </select>
+          <select id="ntcSize" title="Cỡ chữ">
+            <option value="1">10</option><option value="2">12</option>
+            <option value="3" selected>14</option><option value="4">16</option>
+            <option value="5">20</option><option value="6">26</option><option value="7">36</option>
+          </select>
+          <input type="color" id="ntcColor" value="#111111" title="Màu chữ">
+          <span class="cmp-sep"></span>
+          <button class="cmp-tb ntc-tb" data-cmd="bold" title="Đậm"><b>B</b></button>
+          <button class="cmp-tb ntc-tb" data-cmd="italic" title="Nghiêng"><i>I</i></button>
+          <button class="cmp-tb ntc-tb" data-cmd="underline" title="Gạch dưới"><u>U</u></button>
+          <button class="cmp-tb ntc-tb" data-cmd="strikeThrough" title="Gạch ngang"><s>S</s></button>
+          <span class="cmp-sep"></span>
+          <button class="cmp-tb ntc-tb" data-cmd="justifyLeft" title="Canh trái">⯇</button>
+          <button class="cmp-tb ntc-tb" data-cmd="justifyCenter" title="Canh giữa">≡</button>
+          <button class="cmp-tb ntc-tb" data-cmd="justifyRight" title="Canh phải">⯈</button>
+          <button class="cmp-tb ntc-tb" data-cmd="justifyFull" title="Canh đều">▤</button>
+          <span class="cmp-sep"></span>
+          <button class="cmp-tb ntc-tb" data-cmd="insertUnorderedList" title="Danh sách chấm">•</button>
+          <button class="cmp-tb ntc-tb" data-cmd="insertOrderedList" title="Danh sách số">1.</button>
+          <span class="cmp-sep"></span>
+          <button class="cmp-tb ntc-tb" data-cmd="undo" title="Hoàn tác">↶</button>
+          <button class="cmp-tb ntc-tb" data-cmd="redo" title="Làm lại">↷</button>
+        </div>
+
+        <div class="cmp-zone" id="ntcZone">
+          <div id="ntcScaler"><div id="ntcSheet">
+            <div class="vhead">
+              <img src="https://cdn.imgpile.com/f/Yl3ncwx_xl.png" alt="logo" crossorigin="anonymous">
+              <div class="co">CÔNG TY TNHH TM DV<br>KẾT GIAO PHÁT TRIỂN QUỐC TẾ
+                <small>Số: <span id="ntcShNo">……</span>/TB-IDECO</small>
+              </div>
+              <div class="nat"><b>Cộng hòa xã hội chủ nghĩa Việt Nam</b><u>Độc lập – Tự do – Hạnh phúc</u></div>
+            </div>
+            <div class="ttl">Thông báo</div>
+            <div class="sub">(V/v: <span id="ntcShSubject">…………………………………………</span>)</div>
+
+            <div id="ntcEditor" contenteditable="true"></div>
+
+            <div class="ntc-sign-row" style="display:flex;justify-content:space-between;gap:24px;margin-top:42px;text-align:center;font-size:13pt">
+              <div class="col" style="flex:1"></div>
+              <div class="col" style="flex:1">
+                <div class="cap" style="font-weight:bold;text-transform:uppercase">TM. BAN GIÁM ĐỐC</div>
+                <div class="it">(Ký, đóng dấu)</div>
+                <div class="sigimg" id="ntcSigImg"></div>
+                <div class="signame" id="ntcShName">&nbsp;</div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <b style="display:block;margin-bottom:6px">📎 3. Đính kèm file (tuỳ chọn)</b>
+        <div class="muted" style="margin-bottom:10px">Cho phép đính kèm thêm văn bản <b>PDF</b> hoặc <b>Word</b> (.doc/.docx) liên quan đến thông báo này. Có thể chọn nhiều tệp.</div>
+        <button class="btn sm" onclick="ntcAttInp.click()">📎 Chọn file PDF / Word</button>
+        <input type="file" id="ntcAttInp" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple style="display:none">
+        <div id="ntcAttList" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card">
+        <b style="display:block;margin-bottom:6px">✍️ 4. Chữ ký (tuỳ chọn)</b>
+        <div class="row">
+          <div style="flex:2;min-width:200px">
+            <label>Chọn chữ ký đã lưu</label>
+            <select id="ntcSigPick"><option value="">— Không chèn chữ ký —</option></select>
+          </div>
+          <div style="flex:0">
+            <label>&nbsp;</label>
+            <button class="btn sm" onclick="ntcSigInp.click()">🖼 Tải chữ ký mới</button>
+            <input type="file" id="ntcSigInp" accept="image/png,image/*" style="display:none">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <button class="btn ghost" onclick="closeNoticeCompose()">← Huỷ</button>
+          <button class="btn" style="background:#e08600" onclick="noticeSave(false)">💾 Lưu (chờ duyệt)</button>
+          <button class="btn green" onclick="noticeSave(true)">✅ Đóng dấu & Duyệt & Công bố</button>
+          <button class="btn ghost" onclick="noticePdf()">⬇ Tải PDF bản nháp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id="toast" class="toast"></div>
@@ -481,7 +647,7 @@ function renderList(){
   if(!arr.length){el.innerHTML=`<div class="empty"><div class="ico">📄</div>Chưa có tài liệu nào</div>`;return;}
   el.innerHTML=arr.map(d=>`
     <div class="doc-item">
-      <div class="thumb">${d.type==='pdf'?'📕':'🖼️'}</div>
+      <div class="thumb">${d.type==='pdf'?'📕':(d.type==='file'?'📊':'🖼️')}</div>
       <div class="info">
         <b>${esc(d.name)}</b>
         <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':'⏳ Chờ duyệt'}</span>
@@ -507,6 +673,12 @@ fileInp.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.f
 ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.background='';}));
 drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f);});
 
+function isExcelFile(file){
+  return /\.(xlsx|xls)$/i.test(file.name||'')
+    || file.type==='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    || file.type==='application/vnd.ms-excel'
+    || file.type.includes('spreadsheet');
+}
 async function handleFile(file){
   toast('Đang xử lý tài liệu…');
   try{
@@ -515,6 +687,10 @@ async function handleFile(file){
     }else if(file.type.startsWith('image/')){
       const norm=await imgToPngDataURL(await fileToDataURL(file),1600,false);
       cur={name:file.name.replace(/\.[^.]+$/,''),type:'image',pages:[norm],stamps:{}};
+    }else if(isExcelFile(file)){
+      const fileData=await fileToDataURL(file);
+      const ext=(file.name.split('.').pop()||'xlsx').toLowerCase();
+      cur={name:file.name.replace(/\.[^.]+$/,''),type:'file',fileExt:ext,fileMime:file.type,fileData,stamps:{}};
     }else{toast('Định dạng không hỗ trợ');return;}
     curPage=0;openEditor();
   }catch(err){console.error(err);toast('Lỗi khi đọc tài liệu');}
@@ -582,7 +758,17 @@ function openEditor(){
   document.getElementById('editor').style.display='block';
   document.getElementById('edName').textContent=cur.name;
   document.getElementById('saveName').value=cur.name;
-  renderSealLib();window.scrollTo(0,0);renderPage();
+  const isFile=cur.type==='file';
+  document.getElementById('stampArea').style.display=isFile?'none':'block';
+  document.getElementById('fileOnlyBox').style.display=isFile?'block':'none';
+  if(isFile){
+    document.getElementById('fileOnlyInfo').innerHTML=
+      `<div class="ico">📊</div><div style="font-weight:700">${esc(cur.name)}.${esc(cur.fileExt||'')}</div>
+       <div class="muted" style="margin-top:6px">Tệp Excel — không chỉnh sửa/đóng dấu trực tiếp. Bấm "Đóng dấu &amp; Duyệt" bên dưới để duyệt tệp này, hoặc "Tải xuống" để lấy lại tệp gốc.</div>`;
+    window.scrollTo(0,0);
+  }else{
+    renderSealLib();window.scrollTo(0,0);renderPage();
+  }
 }
 function closeEditor(){
   document.getElementById('editor').style.display='none';
@@ -782,9 +968,12 @@ function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(
 
 /* ===== SAVE ===== */
 let pendingApproveName='';
+let approvalContext='doc'; // 'doc' | 'notice' | 'noticeApprove'
+let pendingNoticeId=null;
 async function saveDoc(approve){
   const name=document.getElementById('saveName').value.trim()||cur.name;
   if(approve){
+    approvalContext='doc';
     pendingApproveName=name;
     if(localStorage.getItem('ideco_appr_ok')==='1'){ commitSave(name,true); return; }
     openModal('apprModal');return;
@@ -797,25 +986,36 @@ function confirmApprove(){
   if(document.getElementById('rememberPwd').checked)
     localStorage.setItem('ideco_appr_ok','1');
   closeModal('apprModal');document.getElementById('apprPwd').value='';
-  commitSave(pendingApproveName,true);
+  if(approvalContext==='notice'){ commitNoticeSave(true); }
+  else if(approvalContext==='noticeApprove'){ commitApproveExistingNotice(pendingNoticeId); }
+  else{ commitSave(pendingApproveName,true); }
 }
 async function commitSave(name,approved){
   toast('Đang lưu lên hệ thống…');
   try{
-    const outPages=[];
-    for(let i=0;i<cur.pages.length;i++){
-      if(approved){outPages.push((await renderStampedPage(i)).toDataURL('image/jpeg',0.85));}
-      else outPages.push(cur.pages[i]);
-    }
     const id=cur.id||db.ref('documents').push().key;
-    await db.ref('documents/'+id).set({
-      name,type:cur.type,
-      pages:approved?outPages:cur.pages,
-      rawPages:cur.pages,
-      stamps:cur.stamps,
-      approved,updated:Date.now(),
-      approvedAt:approved?Date.now():(cur.approvedAt||null)
-    });
+    if(cur.type==='file'){
+      await db.ref('documents/'+id).set({
+        name,type:'file',
+        fileExt:cur.fileExt||'',fileMime:cur.fileMime||'',fileData:cur.fileData,
+        approved,updated:Date.now(),
+        approvedAt:approved?Date.now():(cur.approvedAt||null)
+      });
+    }else{
+      const outPages=[];
+      for(let i=0;i<cur.pages.length;i++){
+        if(approved){outPages.push((await renderStampedPage(i)).toDataURL('image/jpeg',0.85));}
+        else outPages.push(cur.pages[i]);
+      }
+      await db.ref('documents/'+id).set({
+        name,type:cur.type,
+        pages:approved?outPages:cur.pages,
+        rawPages:cur.pages,
+        stamps:cur.stamps,
+        approved,updated:Date.now(),
+        approvedAt:approved?Date.now():(cur.approvedAt||null)
+      });
+    }
     toast(approved?'✅ Đã duyệt & lưu lên hệ thống':'💾 Đã lưu (chờ duyệt)');
     closeEditor();
   }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
@@ -824,6 +1024,11 @@ async function commitSave(name,approved){
 /* ===== OPEN / DELETE ===== */
 function openDoc(id){
   const d=docs[id];if(!d)return;
+  if(d.type==='file'){
+    cur={id,name:d.name,type:'file',fileExt:d.fileExt,fileMime:d.fileMime,fileData:d.fileData,
+      approved:d.approved,approvedAt:d.approvedAt};
+    curPage=0;selectedStamp=null;openEditor();return;
+  }
   const stamps=d.stamps||{};
   // migrate any legacy {x,y,scale} stamps to normalized {xr,yr,wr}
   Object.values(stamps).forEach(list=>(list||[]).forEach(st=>{
@@ -838,13 +1043,23 @@ function delDoc(id){if(!confirm('Xoá tài liệu này?'))return;
 
 /* ===== DOWNLOAD ===== */
 async function downloadCurrent(){
+  if(cur.type==='file'){
+    const a=document.createElement('a');a.href=cur.fileData;
+    a.download=(document.getElementById('saveName').value.trim()||cur.name)+'.'+(cur.fileExt||'xlsx');
+    a.click();toast('⬇ Đã tải xuống');return;
+  }
   toast('Đang tạo file…');
   const canvases=[];
   for(let i=0;i<cur.pages.length;i++)canvases.push(await renderStampedPage(i));
   await outputCanvases(canvases,cur.type,document.getElementById('saveName').value.trim()||cur.name);
 }
 async function downloadDoc(id){
-  const d=docs[id];if(!d)return;toast('Đang chuẩn bị file…');
+  const d=docs[id];if(!d)return;
+  if(d.type==='file'){
+    const a=document.createElement('a');a.href=d.fileData;a.download=d.name+'.'+(d.fileExt||'xlsx');
+    a.click();toast('⬇ Đã tải xuống');return;
+  }
+  toast('Đang chuẩn bị file…');
   const canvases=[];
   for(const p of d.pages)canvases.push(await loadCanvas(p));
   await outputCanvases(canvases,d.type,d.name);
@@ -865,31 +1080,27 @@ async function outputCanvases(canvases,type,name){
 }
 
 /* ===== BROADCAST (push notifications to embedded widget) ===== */
-// Writes to broadcasts/{live|pending}. Widget listens & shows popup.
-// A fresh timestamp makes late-arriving viewers see it too (catch-up).
+// Writes to ONE single node broadcasts/current (field "kind" phân biệt live/pending).
+// Dùng 1 node duy nhất để widget chỉ có 1 listener → không còn tình trạng
+// 2 listener độc lập (live/pending) chạy đua và đè popup lên nhau khiến
+// mỗi máy hiện một nội dung khác nhau.
+// Timestamp mới giúp người vào sau (chưa xem) vẫn thấy lại thông báo (catch-up).
 function broadcastLive(){
   const approved=Object.entries(docs).filter(([id,d])=>d.approved).length;
   if(!approved){toast('Chưa có tài liệu đã duyệt để thông báo');return;}
-  db.ref('broadcasts/live').set({
+  db.ref('broadcasts/current').set({
     ts:Date.now(),
+    kind:'live',
     title:'NỘI DUNG VĂN BẢN ĐÃ DUYỆT',
     count:approved
   }).then(()=>toast(`📢 Đã phát thông báo LIVE (${approved} văn bản đã duyệt)`))
     .catch(e=>toast('Lỗi: '+e.message));
 }
-// Xoá cả 2 node broadcast -> widget nhận sự kiện null và tự đóng popup/badge.
-function stopBroadcast(){
-  Promise.all([
-    db.ref('broadcasts/live').remove(),
-    db.ref('broadcasts/pending').remove(),
-    db.ref('broadcasts/current').remove()
-  ]).then(()=>toast('🔕 Đã tắt thông báo trên mọi máy đang xem'))
-    .catch(e=>toast('Lỗi: '+e.message));
-}
 function broadcastPending(id){
   const d=docs[id];if(!d)return;
-  db.ref('broadcasts/pending').set({
+  db.ref('broadcasts/current').set({
     ts:Date.now(),
+    kind:'pending',
     title:'XIN PHÉP CHỜ DUYỆT',
     lastDoc:d.name
   }).then(()=>toast('🔔 Đã gửi thông báo XIN DUYỆT'))
@@ -959,7 +1170,7 @@ function cmpSync(){
 
 /* --- Thanh công cụ kiểu Word --- */
 document.execCommand('styleWithCSS',false,true);
-document.querySelectorAll('.cmp-tb').forEach(b=>{
+document.querySelectorAll('.cmp-tb:not(.ntc-tb)').forEach(b=>{
   b.addEventListener('mousedown',e=>e.preventDefault()); // giữ vùng chọn khi bấm nút
   b.addEventListener('click',()=>{document.execCommand(b.dataset.cmd,false,null);
     document.getElementById('cmpEditor').focus();});
@@ -1081,6 +1292,280 @@ function composeClear(){
   document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
   cmpSync();
   toast('🧹 Đã sẵn sàng soạn văn bản mới');
+}
+
+/* ============================================================
+   TAB BGĐ THÔNG BÁO
+   Trang dành cho Ban Giám Đốc soạn & công bố văn bản/thông báo
+   chính thức cho nhân viên: viết nội dung kiểu Word (như soạn đề
+   xuất), đính kèm PDF/Word, và duyệt bằng mật khẩu + đóng dấu
+   "ĐÃ DUYỆT" giống hệt trang tải hồ sơ lên duyệt.
+   Lưu trên node Firebase riêng: notices/
+============================================================ */
+let notices={};
+let noticeFilter='all';
+let ntcAttachments=[];
+
+db.ref('notices').on('value',snap=>{notices=snap.val()||{};renderNoticeList();});
+db.ref('signatures').on('value',()=>{ setTimeout(ntcFillSigPick,0); });
+
+function openNotice(){
+  document.getElementById('home').style.display='none';
+  document.getElementById('editor').style.display='none';
+  document.getElementById('compose').style.display='none';
+  document.getElementById('notice').style.display='block';
+  document.getElementById('noticeCompose').style.display='none';
+  renderNoticeList();
+  window.scrollTo(0,0);
+}
+function closeNotice(){
+  document.getElementById('notice').style.display='none';
+  document.getElementById('home').style.display='block';
+}
+function openNoticeCompose(){
+  document.getElementById('noticeCompose').style.display='block';
+  if(!document.getElementById('ntcDate').value)
+    document.getElementById('ntcDate').value=new Date().toISOString().slice(0,10);
+  ntcFillSigPick();ntcSync();
+  window.scrollTo(0,0);
+  requestAnimationFrame(ntcFit);
+}
+function closeNoticeCompose(){
+  document.getElementById('noticeCompose').style.display='none';
+}
+
+function setNoticeFilter(f){
+  noticeFilter=f;
+  document.querySelectorAll('#notice .tab').forEach(t=>t.classList.toggle('active',t.dataset.nf===f));
+  renderNoticeList();
+}
+function renderNoticeList(){
+  const el=document.getElementById('noticeList');
+  if(!el)return;
+  let arr=Object.entries(notices).map(([id,d])=>({id,...d})).sort((a,b)=>(b.updated||0)-(a.updated||0));
+  if(noticeFilter==='wait') arr=arr.filter(d=>!d.approved);
+  if(noticeFilter==='ok') arr=arr.filter(d=>d.approved);
+  if(!arr.length){el.innerHTML=`<div class="empty"><div class="ico">📣</div>Chưa có thông báo nào</div>`;return;}
+  el.innerHTML=arr.map(d=>`
+    <div class="doc-item">
+      <div class="thumb">📣</div>
+      <div class="info">
+        <b>${esc(d.name)}</b>
+        <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':'⏳ Chờ duyệt'}</span>
+        <span class="muted"> · ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</span>
+      </div>
+      <div class="row" style="gap:6px">
+        ${d.approved?'':`<button class="btn green sm" onclick="approveNotice('${d.id}')">✅ Duyệt</button>`}
+        <button class="btn sm" onclick="downloadNotice('${d.id}')">⬇ Tải</button>
+        <button class="btn gray sm" onclick="delNotice('${d.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+/* --- Đồng bộ form → trang A4 xem trước --- */
+function ntcSync(){
+  const g=id=>document.getElementById(id);
+  g('ntcShNo').textContent=g('ntcNo').value.trim()||'……';
+  g('ntcShSubject').textContent=g('ntcSubject').value.trim()||'…………………………………………';
+  g('ntcShName').textContent=g('ntcName').value.trim()||'\u00a0';
+  requestAnimationFrame(ntcFit);
+}
+function ntcFit(){
+  const zone=document.getElementById('ntcZone');
+  const scaler=document.getElementById('ntcScaler');
+  const sheet=document.getElementById('ntcSheet');
+  if(!zone||zone.offsetParent===null)return;
+  const avail=zone.clientWidth-12;
+  const sc=Math.min(1,avail/794);
+  scaler.style.transform='scale('+sc+')';
+  scaler.style.width=(794*sc)+'px';
+  scaler.style.margin='0 auto';
+  scaler.style.height=(sheet.offsetHeight*sc)+'px';
+}
+window.addEventListener('resize',ntcFit);
+
+/* --- Thanh công cụ kiểu Word cho khung thông báo --- */
+document.querySelectorAll('.ntc-tb').forEach(b=>{
+  b.addEventListener('mousedown',e=>e.preventDefault());
+  b.addEventListener('click',()=>{document.execCommand(b.dataset.cmd,false,null);
+    document.getElementById('ntcEditor').focus();});
+});
+document.getElementById('ntcFont').addEventListener('change',e=>{
+  document.execCommand('fontName',false,e.target.value);document.getElementById('ntcEditor').focus();});
+document.getElementById('ntcSize').addEventListener('change',e=>{
+  document.execCommand('fontSize',false,e.target.value);document.getElementById('ntcEditor').focus();});
+document.getElementById('ntcColor').addEventListener('input',e=>{
+  document.execCommand('foreColor',false,e.target.value);document.getElementById('ntcEditor').focus();});
+document.getElementById('ntcEditor').addEventListener('input',()=>requestAnimationFrame(ntcFit));
+
+/* --- Đính kèm PDF / Word --- */
+document.getElementById('ntcAttInp').addEventListener('change',async e=>{
+  const files=[...e.target.files];
+  for(const f of files){
+    const data=await fileToDataURL(f);
+    ntcAttachments.push({name:f.name,type:f.type,data});
+  }
+  renderNtcAttList();
+  e.target.value='';
+});
+function renderNtcAttList(){
+  const box=document.getElementById('ntcAttList');
+  if(!ntcAttachments.length){box.innerHTML='';return;}
+  box.innerHTML=ntcAttachments.map((a,i)=>`
+    <div class="row" style="justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px">
+      <span>${a.type==='application/pdf'?'📕':'📄'} ${esc(a.name)}</span>
+      <button class="btn gray sm" onclick="removeNtcAtt(${i})">🗑</button>
+    </div>`).join('');
+}
+function removeNtcAtt(i){ntcAttachments.splice(i,1);renderNtcAttList();}
+
+/* --- Chữ ký: chọn từ kho chung hoặc tải mới --- */
+function ntcFillSigPick(){
+  const sel=document.getElementById('ntcSigPick');if(!sel)return;const cur=sel.value;
+  sel.innerHTML='<option value="">— Không chèn chữ ký —</option>';
+  (seals||[]).forEach(s=>{
+    const o=document.createElement('option');o.value=s.src;o.textContent=s.name||'Chữ ký';sel.appendChild(o);
+  });
+  sel.value=cur;
+}
+document.getElementById('ntcSigPick').addEventListener('change',e=>{
+  document.getElementById('ntcSigImg').innerHTML=e.target.value?'<img src="'+e.target.value+'">':'';
+});
+const ntcSigInp=document.getElementById('ntcSigInp');
+ntcSigInp.addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  toast('Đang lưu chữ ký…');
+  const url=await imgToPngDataURL(await fileToDataURL(f),600,true);
+  const id=db.ref('signatures').push().key;
+  await db.ref('signatures/'+id).set({src:url,name:f.name.replace(/\.[^.]+$/,''),updated:Date.now()});
+  document.getElementById('ntcSigImg').innerHTML='<img src="'+url+'">';
+  setTimeout(()=>{ntcFillSigPick();document.getElementById('ntcSigPick').value=url;},300);
+  toast('✅ Đã lưu & chèn chữ ký');
+  ntcSigInp.value='';
+});
+
+/* --- Render trang A4 thông báo thành canvas --- */
+async function ntcRenderSheet(){
+  const scaler=document.getElementById('ntcScaler');
+  const saved=scaler.style.transform;
+  scaler.style.transform='none';
+  try{
+    return await html2canvas(document.getElementById('ntcSheet'),
+      {scale:2,useCORS:true,backgroundColor:'#ffffff'});
+  }finally{
+    scaler.style.transform=saved;
+  }
+}
+function noticeDocName(){
+  const nm=document.getElementById('ntcSubject').value.trim()||'Không tiêu đề';
+  const dt=document.getElementById('ntcDate').value
+    ?new Date(document.getElementById('ntcDate').value).toLocaleDateString('vi-VN'):'';
+  return 'THÔNG BÁO - '+nm+' '+dt;
+}
+
+/* --- Đóng dấu "ĐÃ DUYỆT" lên góc dưới ảnh trang đã render --- */
+function stampImageDataURL(src){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=async()=>{
+      const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;
+      const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+      const stamp=await loadImg(buildStampDataURL());
+      const w=img.naturalWidth*0.22;
+      const h=w*(stamp.naturalHeight/stamp.naturalWidth);
+      ctx.drawImage(stamp, img.naturalWidth-w-60, img.naturalHeight-h-160, w, h);
+      res(c.toDataURL('image/jpeg',0.9));
+    };
+    img.src=src;
+  });
+}
+
+/* --- Lưu (chờ duyệt) / Đóng dấu & Duyệt & Công bố --- */
+async function noticeSave(approve){
+  const name=document.getElementById('ntcName').value.trim();
+  const date=document.getElementById('ntcDate').value;
+  if(!name){toast('⚠️ Nhập người ký/ban hành (mục 1)');return;}
+  if(!date){toast('⚠️ Chọn ngày ban hành (mục 1)');return;}
+  if(!document.getElementById('ntcEditor').textContent.trim()){toast('⚠️ Nội dung thông báo đang trống (mục 2)');return;}
+  if(approve){
+    approvalContext='notice';
+    if(localStorage.getItem('ideco_appr_ok')==='1'){ await commitNoticeSave(true); return; }
+    openModal('apprModal');return;
+  }
+  await commitNoticeSave(false);
+}
+async function commitNoticeSave(approved){
+  toast('Đang lưu thông báo…');
+  try{
+    const canvas=await ntcRenderSheet();
+    let page=canvas.toDataURL('image/jpeg',0.9);
+    if(approved) page=await stampImageDataURL(page);
+    const id=db.ref('notices').push().key;
+    await db.ref('notices/'+id).set({
+      name:noticeDocName(),
+      subject:document.getElementById('ntcSubject').value.trim(),
+      no:document.getElementById('ntcNo').value.trim(),
+      issuer:document.getElementById('ntcName').value.trim(),
+      date:document.getElementById('ntcDate').value,
+      page,
+      attachments:ntcAttachments||[],
+      approved,updated:Date.now(),approvedAt:approved?Date.now():null
+    });
+    toast(approved?'✅ Đã duyệt & công bố thông báo':'💾 Đã lưu — chờ duyệt');
+    ntcAttachments=[];renderNtcAttList();
+    closeNoticeCompose();
+  }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
+}
+
+/* --- Tải PDF bản nháp --- */
+async function noticePdf(){
+  toast('Đang xuất PDF…');
+  try{
+    const canvas=await ntcRenderSheet();
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'p',unit:'px',format:[canvas.width,canvas.height]});
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.9),'JPEG',0,0,canvas.width,canvas.height);
+    pdf.save(noticeDocName()+'.pdf');
+    toast('⬇ Đã tải PDF');
+  }catch(err){toast('Lỗi: '+err.message);}
+}
+
+/* --- Duyệt thông báo đã lưu (từ danh sách), giống hệt cơ chế mật khẩu ở trang tải hồ sơ --- */
+function approveNotice(id){
+  pendingNoticeId=id;
+  approvalContext='noticeApprove';
+  if(localStorage.getItem('ideco_appr_ok')==='1'){ commitApproveExistingNotice(id); return; }
+  openModal('apprModal');
+}
+async function commitApproveExistingNotice(id){
+  const d=notices[id];if(!d)return;
+  toast('Đang duyệt…');
+  try{
+    const stampedPage=await stampImageDataURL(d.page);
+    await db.ref('notices/'+id).update({page:stampedPage,approved:true,approvedAt:Date.now(),updated:Date.now()});
+    toast('✅ Đã duyệt thông báo');
+  }catch(err){toast('Lỗi: '+err.message);}
+}
+
+/* --- Tải thông báo (trang chính + các file đính kèm) --- */
+async function downloadNotice(id){
+  const d=notices[id];if(!d)return;
+  toast('Đang chuẩn bị file…');
+  try{
+    const c=await loadCanvas(d.page);
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'p',unit:'px',format:[c.width,c.height]});
+    pdf.addImage(c.toDataURL('image/jpeg',0.9),'JPEG',0,0,c.width,c.height);
+    pdf.save(d.name+'.pdf');
+    (d.attachments||[]).forEach((a,i)=>{
+      setTimeout(()=>{const el=document.createElement('a');el.href=a.data;el.download=a.name;el.click();},300*(i+1));
+    });
+    toast('⬇ Đã tải thông báo');
+  }catch(err){toast('Lỗi: '+err.message);}
+}
+function delNotice(id){
+  if(!confirm('Xoá thông báo này?'))return;
+  db.ref('notices/'+id).remove().then(()=>toast('Đã xoá'));
 }
 </script>
 </body>
