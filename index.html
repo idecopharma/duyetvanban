@@ -1,6 +1,85 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<!-- skill:chrome -->
+<style>
+/* Credit line — bottom-right */
+.design-ui-credit {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  font: 11px/1 system-ui, sans-serif;
+  color: rgba(128,128,128,0.5);
+  pointer-events: none;
+  z-index: 2147483647;
+  transition: opacity 0.4s ease;
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+
+/* Hide chrome on touch devices */
+@media (hover: none) {
+  .design-ui-credit { display: none; }
+}
+
+/* Print fixes */
+@media print {
+  * {
+    transition: none !important;
+    animation: none !important;
+    box-shadow: none !important;
+  }
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .design-ui-credit { display: none !important; }
+}
+
+</style>
+<script>
+(function () {
+    // Design-ui pages are single compositions, so the whole body is editable.
+    function markEditable() {
+        document.body.classList.add('artifact-editable');
+    }
+
+    // Credit badge with idle-fade. Hover devices only.
+    function initChromeUI() {
+        if (!matchMedia('(hover: hover)').matches) return;
+
+        var credit = document.createElement('div');
+        credit.className = 'design-ui-credit';
+        credit.setAttribute('aria-hidden', 'true');
+        credit.innerHTML = '\u{1F49C} by ClickUp Brain';
+        document.body.appendChild(credit);
+
+        var timer = null;
+        var fade = function (out) { credit.style.opacity = out ? '0' : ''; };
+        fade(true);
+        var show = function () {
+            fade(false);
+            clearTimeout(timer);
+            timer = setTimeout(function () { fade(true); }, 3000);
+        };
+        document.addEventListener('mousemove', show);
+        show();
+    }
+
+    function init() {
+        markEditable();
+        initChromeUI();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+</script>
+<!-- /skill:chrome -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>IDECO - Duyệt Tài Liệu</title>
@@ -58,12 +137,13 @@
   .badge.wait{background:#fff3cd;color:#946c00}
   .badge.ok{background:#d5f4e0;color:var(--green-d)}
   .badge.mgr{background:#e0edff;color:#12468f}
-  .mgrline{font-size:12.5px;margin-top:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.4}
+  .mgrline{font-size:12.5px;margin-top:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.45}
   .mgrline.ok{color:#12468f}
   .mgrline.no{color:#b4690e}
   .mgr-chip{background:#eef4ff;border:1px solid #c7dbff;color:#12468f;border-radius:8px;padding:2px 8px;font-weight:800}
   .mgr-bar{border:1px dashed #c7dbff;background:#f5f9ff;border-radius:12px;padding:12px;margin-bottom:12px}
   .mgr-bar.warn{border-color:#f0c98a;background:#fffaf0}
+  .btn.locked{opacity:.45;filter:grayscale(.6)}
   .tabs{display:flex;gap:8px;margin-bottom:14px}
   .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-weight:600;cursor:pointer;
     background:#fff;border:1px solid var(--line);font-size:14px}
@@ -118,6 +198,22 @@
   .seal-chip .x{position:absolute;top:-8px;right:-8px;background:var(--red);color:#fff;
     border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;line-height:1}
 
+  /* ===== Danh sách tệp đính kèm (Excel / PDF / Word) ===== */
+  .att-item{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;
+    padding:9px 12px;margin-bottom:7px;background:#fff}
+  .att-item .ic{font-size:19px;flex-shrink:0}
+  .att-item .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:14px}
+  .att-item .sz{font-size:12px;color:var(--mut);flex-shrink:0}
+  .att-item .mg{display:flex;align-items:center;gap:6px;margin:0;font-size:12.5px;font-weight:700;
+    color:var(--green-d);flex-shrink:0;cursor:pointer;background:#eefaf1;border:1px solid #cdeeda;
+    border-radius:20px;padding:5px 11px}
+  .att-item .mg input{width:auto;margin:0}
+  .att-item .nomg{font-size:12px;color:var(--mut);flex-shrink:0;font-style:italic}
+  @media (max-width:640px){
+    .att-item{flex-wrap:wrap}
+    .att-item .nm{flex-basis:100%;order:-1}
+  }
+
   /* ===== Nút mở tab Soạn đề xuất (trên header) ===== */
   .hdr-compose{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)}
 
@@ -165,6 +261,8 @@
   #cmpEditor{min-height:360px;outline:none;padding:6px 2px;font-size:14pt;border:1px dashed transparent}
   #cmpEditor:focus{border-color:#bcd8c6}
   #cmpEditor:empty:before{content:"Bấm vào đây và nhập nội dung đề xuất…";color:#9aa1ab;font-style:italic}
+  #cmpAttNote{margin-top:18px;font-size:12pt;font-style:italic;color:#333}
+  #cmpAttNote b{font-style:normal}
   #cmpSign{display:flex;justify-content:space-between;gap:24px;margin-top:42px;text-align:center;font-size:13pt}
   #cmpSign .col{flex:1}
   #cmpSign .cap{font-weight:bold;text-transform:uppercase}
@@ -178,7 +276,7 @@
 
 <header>
   <img src="https://cdn.imgpile.com/f/GK3nMDF_xl.png" onerror="this.style.display='none'" alt="">
-  <h1>CÁC ĐỀ XUẤT- BẢNG GIÁ- BÁO GIÁ - NỘI DUNG KHÁC CẦN BGĐ <span class="sub">IDECO DUYỆT</span></h1>
+  <h1>CÁC ĐỀ XUẤT- BẢNG GIÁ- BÁO GIÁ - NỘI DUNG KHÁC CẦN BGĐ <span class="sub">IDECO DUYỆT</span></h1>
   <button class="btn ghost sm hdr-compose" onclick="location.href='https://erp-ideco.skyit.vn/#/app/dashboard/main'" title="Quay lại ERP">🏠 HOME ERP</button>
   <button class="btn ghost sm hdr-compose" onclick="openCompose()">✍️ Soạn đề xuất</button>
   <button class="btn ghost sm hdr-compose" onclick="openNotice()">📣 BGĐ Thông báo</button>
@@ -196,7 +294,7 @@
       <div class="drop" id="drop" onclick="fileInp.click()">
         <div class="ico">📤</div>
         <div style="font-weight:700;margin-top:6px">Tải tài liệu lên để duyệt</div>
-        <div class="muted" style="margin-top:4px">PDF · JPG · PNG · Excel (XLSX/XLS) — bấm hoặc kéo thả vào đây</div>
+        <div class="muted" style="margin-top:4px">PDF · JPG · PNG · Excel (XLSX/XLS — tự động chuyển sang PDF để đóng dấu) — bấm hoặc kéo thả vào đây</div>
       </div>
       <input type="file" id="fileInp" accept="application/pdf,image/*,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none">
     </div>
@@ -265,9 +363,14 @@
 
       <div id="fileOnlyBox" style="display:none">
         <div class="empty" id="fileOnlyInfo">
-          <div class="ico">📊</div>
-          Tệp Excel — không chỉnh sửa nội dung trực tiếp, chỉ xem trạng thái và bấm duyệt.
+          <div class="ico">📎</div>
+          Tệp đính kèm — không chỉnh sửa nội dung trực tiếp, chỉ xem trạng thái và bấm duyệt.
         </div>
+      </div>
+
+      <div id="edAttBox" style="display:none;margin-top:16px">
+        <label>📎 Tệp đính kèm của tài liệu này</label>
+        <div id="edAttList"></div>
       </div>
 
       <div class="row" style="margin-top:14px">
@@ -278,7 +381,7 @@
       </div>
       <div class="row" style="margin-top:12px">
         <button class="btn" onclick="saveDoc(false)">💾 Lưu (chờ duyệt)</button>
-        <button class="btn green" onclick="saveDoc(true)">✅ Đóng dấu & Duyệt</button>
+        <button class="btn green" id="btnApprove" onclick="saveDoc(true)">✅ Đóng dấu & Duyệt</button>
         <button class="btn gray" onclick="downloadCurrent()">⬇ Tải xuống</button>
       </div>
     </div>
@@ -382,6 +485,8 @@
 
           <div id="cmpEditor" contenteditable="true"></div>
 
+          <div id="cmpAttNote" style="display:none"></div>
+
           <div id="cmpSign">
             <div class="col">
               <div class="cap">Người lập đề xuất</div>
@@ -400,9 +505,22 @@
       </div>
     </div>
 
-    <!-- FORM 3: XÁC NHẬN CỦA QUẢN LÝ (KHÔNG CẦN MẬT KHẨU) -->
+    <!-- FORM 3: ĐÍNH KÈM FILE EXCEL / PDF / WORD -->
     <div class="card">
-      <b style="display:block;margin-bottom:6px">✅ 3. Xác nhận của cấp quản lý</b>
+      <b style="display:block;margin-bottom:6px">📎 3. Đính kèm file (Excel · PDF · Word)</b>
+      <div class="muted" style="margin-bottom:10px">
+        Đính kèm bảng giá <b>Excel (.xlsx/.xls)</b>, hồ sơ <b>PDF</b> hoặc <b>Word</b> đi kèm đề xuất. Chọn nhiều tệp cùng lúc, mỗi tệp tối đa <b>8MB</b>.
+        Bật <b>“Gộp &amp; đóng dấu”</b> để nội dung Excel/PDF thành các trang nằm ngay sau tờ đề xuất, khi duyệt sẽ được đóng dấu chung một file. Tệp gốc luôn giữ lại để tải về.
+      </div>
+      <button class="btn sm" onclick="cmpAttInp.click()">📎 Chọn file Excel / PDF / Word</button>
+      <input type="file" id="cmpAttInp" multiple style="display:none"
+        accept=".xlsx,.xls,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+      <div id="cmpAttList" style="margin-top:12px"></div>
+    </div>
+
+    <!-- FORM 4: XÁC NHẬN CỦA QUẢN LÝ (KHÔNG CẦN MẬT KHẨU) -->
+    <div class="card">
+      <b style="display:block;margin-bottom:6px">✅ 4. Xác nhận của cấp quản lý</b>
       <div class="muted" style="margin-bottom:10px">Người phụ trách / người được phân quyền gõ tên xác nhận trực tiếp — <b>không cần mật khẩu</b>. Mật khẩu chỉ dùng ở bước "Đóng dấu &amp; Duyệt" cuối cùng.</div>
       <div class="row">
         <div style="flex:2;min-width:200px">
@@ -544,9 +662,10 @@
 
       <div class="card">
         <b style="display:block;margin-bottom:6px">📎 3. Đính kèm file (tuỳ chọn)</b>
-        <div class="muted" style="margin-bottom:10px">Cho phép đính kèm thêm văn bản <b>PDF</b> hoặc <b>Word</b> (.doc/.docx) liên quan đến thông báo này. Có thể chọn nhiều tệp.</div>
-        <button class="btn sm" onclick="ntcAttInp.click()">📎 Chọn file PDF / Word</button>
-        <input type="file" id="ntcAttInp" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple style="display:none">
+        <div class="muted" style="margin-bottom:10px">Cho phép đính kèm <b>Excel (.xlsx/.xls)</b>, <b>PDF</b> hoặc <b>Word</b> (.doc/.docx) liên quan đến thông báo này. Có thể chọn nhiều tệp, mỗi tệp tối đa <b>8MB</b>.</div>
+        <button class="btn sm" onclick="ntcAttInp.click()">📎 Chọn file Excel / PDF / Word</button>
+        <input type="file" id="ntcAttInp" multiple style="display:none"
+          accept=".xlsx,.xls,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
         <div id="ntcAttList" style="margin-top:10px"></div>
       </div>
 
@@ -583,14 +702,14 @@
 <div class="modal-bg" id="mgrModal">
   <div class="modal">
     <h3 style="margin-top:0">✍️ Xác nhận của cấp quản lý</h3>
-    <p class="muted" style="margin-top:0">Người phụ trách bộ phận khai <b>họ tên</b> và <b>chức vụ</b> để xác nhận hồ sơ này trước khi trình Giám đốc ký duyệt. Nội dung xác nhận sẽ được <b>in trực tiếp vào file</b> và hiển thị trong danh sách.</p>
+    <p class="muted" style="margin-top:0">Người phụ trách bộ phận khai <b>họ tên</b> và <b>chức vụ</b> để xác nhận hồ sơ trước khi trình Giám đốc ký duyệt. Nội dung xác nhận được <b>in trực tiếp vào file</b> và hiển thị trong danh sách.</p>
     <div id="mgrDocName" class="muted" style="font-weight:700;color:#111;margin-bottom:10px"></div>
     <label>Họ tên cấp quản lý</label>
     <input id="mgrName" placeholder="VD: Nguyễn Thương Hoài" onkeydown="if(event.key==='Enter')mgrConfirm()">
     <label style="margin-top:8px;display:block">Chức vụ</label>
-    <input id="mgrRole" list="mgrRoleList" placeholder="VD: Quản lý kế toán-kho vận-Sop" onkeydown="if(event.key==='Enter')mgrConfirm()">
+    <input id="mgrRole" list="mgrRoleList" placeholder="VD: Trưởng phòng Kinh doanh" onkeydown="if(event.key==='Enter')mgrConfirm()">
     <datalist id="mgrRoleList">
-      <option value="Quàn lý kinh doanh"></option>
+      <option value="Trưởng phòng Kinh doanh"></option>
       <option value="Trưởng phòng Kế toán"></option>
       <option value="Kế toán trưởng"></option>
       <option value="Thủ kho"></option>
@@ -634,6 +753,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 /* ===== CONFIG ===== */
 const APP_PASSWORD = "minhtriet1973";
@@ -665,19 +785,23 @@ let curNatW=0, curNatH=0;
 // stamp width as fraction of document width (WYSIWYG on any zoom)
 const STAMP_WR = 0.26;  // "Đã Duyệt" seal ~26% of page width
 const SEAL_WR  = 0.24;  // signature ~24%
+const MAX_ATT_MB = 8;   // giới hạn dung lượng mỗi tệp đính kèm
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
 
 /* ===== INIT — no login, everyone sees the list ===== */
-db.ref('documents').on('value',snap=>{docs=snap.val()||{};renderList();
-  if(document.getElementById('editor').style.display==='block')renderEdMgrBar();});
+db.ref('documents').on('value',snap=>{docs=snap.val()||{};renderList();});
 // Signatures stored on Firebase → available on every machine, no re-upload
 db.ref('signatures').on('value',snap=>{
   const v=snap.val()||{};
   seals=Object.entries(v).map(([id,s])=>({id,src:s.src,name:s.name||'',updated:s.updated||0}))
     .sort((a,b)=>(b.updated||0)-(a.updated||0));
   if(document.getElementById('editor').style.display==='block')renderSealLib();
+});
+
+db.ref('documents').on('value',()=>{
+  if(document.getElementById('editor').style.display==='block')setTimeout(renderEdMgrBar,0);
 });
 
 function setFilter(f){curFilter=f;
@@ -692,12 +816,12 @@ function renderList(){
   if(!arr.length){el.innerHTML=`<div class="empty"><div class="ico">📄</div>Chưa có tài liệu nào</div>`;return;}
   el.innerHTML=arr.map(d=>`
     <div class="doc-item">
-      <div class="thumb">${d.type==='pdf'?'📕':(d.type==='file'?'📊':'🖼️')}</div>
+      <div class="thumb">${d.type==='pdf'?'📕':(d.type==='excel'?'📊':(d.type==='file'?'📎':'🖼️'))}</div>
       <div class="info">
         <b>${esc(d.name)}</b>
         <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':'⏳ Chờ duyệt'}</span>
         ${d.mgr?`<span class="badge mgr">✍️ Đã xác nhận</span>`:''}
-        <span class="muted"> · ${fmtDate(d.updated)}</span>
+        <span class="muted"> · ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</span>
         ${mgrLineHTML(d)}
       </div>
       <div class="row" style="gap:6px">
@@ -709,7 +833,7 @@ function renderList(){
       </div>
     </div>`).join('');
 }
-/* Dòng hiển thị trạng thái xác nhận của cấp quản lý trong danh sách */
+/* Dòng trạng thái xác nhận của cấp quản lý hiển thị trong danh sách */
 function mgrLineHTML(d){
   if(d.mgr){
     return `<div class="mgrline ok">
@@ -719,12 +843,47 @@ function mgrLineHTML(d){
       ${d.mgr.note?`<span class="muted">· “${esc(d.mgr.note)}”</span>`:''}
     </div>`;
   }
-  if(d.approved) return `<div class="mgrline no">⚠️ Duyệt khi chưa có xác nhận của cấp quản lý</div>`;
-  return `<div class="mgrline no">⚠️ Chưa có xác nhận của cấp quản lý</div>`;
+  return `<div class="mgrline no">⚠️ Chưa có xác nhận của cấp quản lý — chưa thể đóng dấu duyệt</div>`;
 }
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fmtDate(t){if(!t)return'';const d=new Date(t);
   return d.toLocaleDateString('vi-VN')+' '+d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});}
+
+/* ===== HELPER CHUNG CHO TỆP ĐÍNH KÈM ===== */
+function isExcelName(n){return /\.(xlsx|xls)$/i.test(n||'');}
+function isPdfName(n){return /\.pdf$/i.test(n||'');}
+function isWordName(n){return /\.(doc|docx)$/i.test(n||'');}
+function attIcon(a){const n=(a&&a.name)||'';
+  return isExcelName(n)?'📊':(isPdfName(n)?'📕':(isWordName(n)?'📄':'📎'));}
+function fmtSize(b){if(!b&&b!==0)return'';
+  return b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';}
+function dataURLToBlob(dataURL){
+  const parts=String(dataURL).split(',');
+  const mime=(parts[0].match(/:(.*?);/)||[])[1]||'application/octet-stream';
+  const bin=atob(parts[1]);const u=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+  return new Blob([u],{type:mime});
+}
+function saveDataURL(dataURL,filename){
+  const a=document.createElement('a');a.href=dataURL;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();
+}
+function downloadAttachments(list){
+  (list||[]).forEach((a,i)=>setTimeout(()=>saveDataURL(a.data,a.name),320*(i+1)));
+}
+/* Excel/PDF đính kèm → các trang ảnh để gộp vào văn bản và đóng dấu chung */
+async function attachmentToPages(list){
+  const pages=[];
+  for(const a of (list||[])){
+    if(!a.merge)continue;
+    try{
+      const blob=dataURLToBlob(a.data);
+      if(isPdfName(a.name)) pages.push(...await pdfToImages(blob));
+      else if(isExcelName(a.name)) pages.push(...await excelToImages(blob));
+    }catch(err){console.error(err);toast('Không gộp được "'+a.name+'" — vẫn giữ tệp gốc');}
+  }
+  return pages;
+}
 
 /* ===== UPLOAD DOC ===== */
 const fileInp=document.getElementById('fileInp');
@@ -749,12 +908,11 @@ async function handleFile(file){
       const norm=await imgToPngDataURL(await fileToDataURL(file),1600,false);
       cur={name:file.name.replace(/\.[^.]+$/,''),type:'image',pages:[norm],stamps:{}};
     }else if(isExcelFile(file)){
-      const fileData=await fileToDataURL(file);
-      const ext=(file.name.split('.').pop()||'xlsx').toLowerCase();
-      cur={name:file.name.replace(/\.[^.]+$/,''),type:'file',fileExt:ext,fileMime:file.type,fileData,stamps:{}};
+      toast('Đang chuyển Excel sang PDF để có thể đóng dấu & duyệt…');
+      cur={name:file.name.replace(/\.[^.]+$/,''),type:'excel',pages:await excelToImages(file),stamps:{}};
     }else{toast('Định dạng không hỗ trợ');return;}
     curPage=0;openEditor();
-  }catch(err){console.error(err);toast('Lỗi khi đọc tài liệu');}
+  }catch(err){console.error(err);toast('Lỗi khi đọc tài liệu: '+(err.message||err));}
 }
 function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();
   r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
@@ -779,6 +937,49 @@ async function pdfToImages(file){
     await page.render({canvasContext:ctx,viewport:vp}).promise;
     pages.push(c.toDataURL('image/jpeg',0.82));
     c.width=c.height=0; // free memory between pages
+  }
+  return pages;
+}
+
+/* ===== EXCEL → ẢNH TRANG (giống PDF) để đóng dấu & duyệt được ===== */
+async function excelToImages(file){
+  if(typeof XLSX==='undefined') throw new Error('Chưa tải được thư viện đọc Excel, vui lòng thử lại');
+  const buf=await file.arrayBuffer();
+  const wb=XLSX.read(buf,{type:'array'});
+  const sheetNames=wb.SheetNames.filter(n=>wb.Sheets[n] && wb.Sheets[n]['!ref']);
+  if(!sheetNames.length) throw new Error('Không tìm thấy dữ liệu trong file Excel');
+  const MAX_SHEETS=25; // an toàn cho bộ nhớ / dung lượng Firebase
+  const names=sheetNames.slice(0,MAX_SHEETS);
+  const holder=document.createElement('div');
+  holder.style.cssText='position:fixed;left:-99999px;top:0;background:#fff;padding:22px;'+
+    'font-family:Arial,Helvetica,sans-serif;width:1200px;';
+  document.body.appendChild(holder);
+  const pages=[];
+  try{
+    for(let i=0;i<names.length;i++){
+      toast(`Đang chuyển sheet ${i+1}/${names.length}…`);
+      const name=names[i];
+      const ws=wb.Sheets[name];
+      const tableHtml=XLSX.utils.sheet_to_html(ws,{id:'xlsTbl'+i});
+      holder.innerHTML=`<div style="font-size:16px;font-weight:700;margin-bottom:12px;color:#111">📊 ${esc(name)}</div>${tableHtml}`;
+      const table=holder.querySelector('table');
+      if(table){
+        table.style.borderCollapse='collapse';
+        table.style.fontSize='12.5px';
+        table.style.background='#fff';
+        table.querySelectorAll('td,th').forEach(td=>{
+          td.style.border='1px solid #999';
+          td.style.padding='4px 7px';
+          td.style.whiteSpace='nowrap';
+        });
+      }else{
+        holder.innerHTML+='<div style="color:#888;margin-top:10px">(Sheet trống)</div>';
+      }
+      const canvas=await html2canvas(holder,{scale:1.6,backgroundColor:'#ffffff',useCORS:true});
+      pages.push(canvas.toDataURL('image/jpeg',0.85));
+    }
+  }finally{
+    document.body.removeChild(holder);
   }
   return pages;
 }
@@ -814,30 +1015,6 @@ function delSeal(id){
 }
 
 /* ===== EDITOR ===== */
-function renderEdMgrBar(){
-  const bar=document.getElementById('edMgrBar');
-  if(!bar||!cur)return;
-  if(!cur.id){
-    bar.className='mgr-bar warn';
-    bar.innerHTML=`<b>✍️ Xác nhận của cấp quản lý</b>
-      <div class="muted" style="margin-top:4px">Hãy bấm <b>“Lưu (chờ duyệt)”</b> trước, sau đó xác nhận ngay tại danh sách hồ sơ ở màn hình chính.</div>`;
-    return;
-  }
-  const d=docs[cur.id]||{};
-  if(d.mgr){
-    bar.className='mgr-bar';
-    bar.innerHTML=`<b style="color:#12468f">✍️ Đã có xác nhận của cấp quản lý</b>
-      <div style="margin-top:4px"><b>${esc(d.mgr.name)}</b>${d.mgr.role?' — '+esc(d.mgr.role):''}
-      <span class="muted">· ${fmtDate(d.mgr.at)}</span></div>
-      <div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="openMgrModal('${cur.id}')">Sửa / thu hồi xác nhận</button></div>`;
-  }else{
-    bar.className='mgr-bar warn';
-    bar.innerHTML=`<b style="color:#b4690e">⚠️ Hồ sơ chưa có xác nhận của cấp quản lý</b>
-      <div class="muted" style="margin-top:4px">Theo quy trình, hồ sơ phải được người phụ trách bộ phận xác nhận (họ tên – chức vụ) trước khi Giám đốc đóng dấu duyệt.</div>
-      <div class="row" style="margin-top:8px"><button class="btn sm" style="background:#12468f" onclick="openMgrModal('${cur.id}')">✍️ Xác nhận ngay</button></div>`;
-  }
-}
-
 function openEditor(){
   document.getElementById('home').style.display='none';
   document.getElementById('editor').style.display='block';
@@ -845,16 +1022,66 @@ function openEditor(){
   document.getElementById('saveName').value=cur.name;
   const isFile=cur.type==='file';
   document.getElementById('stampArea').style.display=isFile?'none':'block';
-  renderEdMgrBar();
   document.getElementById('fileOnlyBox').style.display=isFile?'block':'none';
+  renderEdAttList();renderEdMgrBar();
   if(isFile){
     document.getElementById('fileOnlyInfo').innerHTML=
-      `<div class="ico">📊</div><div style="font-weight:700">${esc(cur.name)}.${esc(cur.fileExt||'')}</div>
-       <div class="muted" style="margin-top:6px">Tệp Excel — không chỉnh sửa/đóng dấu trực tiếp. Bấm "Đóng dấu &amp; Duyệt" bên dưới để duyệt tệp này, hoặc "Tải xuống" để lấy lại tệp gốc.</div>`;
+      `<div class="ico">📎</div><div style="font-weight:700">${esc(cur.name)}.${esc(cur.fileExt||'')}</div>
+       <div class="muted" style="margin-top:6px">Tệp đính kèm — không chỉnh sửa/đóng dấu trực tiếp. Bấm "Đóng dấu &amp; Duyệt" bên dưới để duyệt tệp này, hoặc "Tải xuống" để lấy lại tệp gốc.</div>`;
     window.scrollTo(0,0);
   }else{
     renderSealLib();window.scrollTo(0,0);renderPage();
   }
+}
+/* Thanh trạng thái xác nhận cấp quản lý + khoá nút "Đóng dấu & Duyệt" */
+function renderEdMgrBar(){
+  const bar=document.getElementById('edMgrBar');
+  const btn=document.getElementById('btnApprove');
+  if(!bar||!cur)return;
+  const d=cur.id?(docs[cur.id]||{}):{};
+  const mgr=d.mgr||cur.mgr||null;
+  if(!cur.id){
+    bar.className='mgr-bar warn';
+    bar.innerHTML=`<b style="color:#b4690e">⚠️ Hồ sơ chưa được lưu</b>
+      <div class="muted" style="margin-top:4px">Bấm <b>“Lưu (chờ duyệt)”</b> trước. Sau đó cấp quản lý xác nhận (họ tên – chức vụ) thì mới mở được nút <b>Đóng dấu &amp; Duyệt</b>.</div>`;
+  }else if(mgr){
+    cur.mgr=mgr;
+    bar.className='mgr-bar';
+    bar.innerHTML=`<b style="color:#12468f">✍️ Đã có xác nhận của cấp quản lý</b>
+      <div style="margin-top:4px"><b>${esc(mgr.name)}</b>${mgr.role?' — '+esc(mgr.role):''}
+      <span class="muted">· ${fmtDate(mgr.at)}</span>${mgr.note?` <span class="muted">· “${esc(mgr.note)}”</span>`:''}</div>
+      <div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="openMgrModal('${cur.id}')">Sửa / thu hồi xác nhận</button></div>`;
+  }else{
+    bar.className='mgr-bar warn';
+    bar.innerHTML=`<b style="color:#b4690e">🔒 Chưa thể duyệt — thiếu xác nhận của cấp quản lý</b>
+      <div class="muted" style="margin-top:4px">Theo quy trình, người phụ trách bộ phận phải xác nhận (họ tên – chức vụ) trước khi Giám đốc đóng dấu duyệt.</div>
+      <div class="row" style="margin-top:8px"><button class="btn sm" style="background:#12468f" onclick="openMgrModal('${cur.id}')">✍️ Xác nhận ngay</button></div>`;
+  }
+  if(btn){
+    const locked=!mgr;
+    btn.classList.toggle('locked',locked);
+    btn.textContent = locked?'🔒 Đóng dấu & Duyệt':'✅ Đóng dấu & Duyệt';
+    btn.title = locked?'Cần xác nhận của cấp quản lý trước khi duyệt':'';
+  }
+}
+
+/* Danh sách tệp đính kèm hiển thị trong màn hình duyệt */
+function renderEdAttList(){
+  const box=document.getElementById('edAttBox'), list=document.getElementById('edAttList');
+  const atts=(cur&&cur.attachments)||[];
+  if(!atts.length){box.style.display='none';list.innerHTML='';return;}
+  box.style.display='block';
+  list.innerHTML=atts.map((a,i)=>`
+    <div class="att-item">
+      <span class="ic">${attIcon(a)}</span>
+      <span class="nm">${esc(a.name)}</span>
+      <span class="sz">${fmtSize(a.size)}${a.merge?' · đã gộp vào văn bản':''}</span>
+      <button class="btn ghost sm" onclick="downloadEdAtt(${i})">⬇ Tải tệp gốc</button>
+    </div>`).join('');
+}
+function downloadEdAtt(i){
+  const a=(cur&&cur.attachments||[])[i];if(!a)return;
+  saveDataURL(a.data,a.name);toast('⬇ Đã tải '+a.name);
 }
 function closeEditor(){
   document.getElementById('editor').style.display='none';
@@ -1053,12 +1280,12 @@ function renderStampedPage(pageIdx){
 function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src;});}
 
 /* ============================================================
-   XÁC NHẬN CỦA CẤP QUẢN LÝ (2 lớp kiểm soát trước dấu Giám đốc)
-   - Người phụ trách khai: Họ tên + Chức vụ (+ ý kiến) → bấm Xác nhận
-   - Ghi vào documents/{id}/mgr  {name, role, note, at}
-   - ĐỒNG THỜI in khối "ĐÃ XÁC NHẬN" trực tiếp vào trang cuối của
-     file (cả pages lẫn rawPages) để bản tải về / bản đóng dấu sau
-     này luôn mang dấu xác nhận — không thể mất kiểm soát.
+   XÁC NHẬN CỦA CẤP QUẢN LÝ — lớp kiểm soát bắt buộc trước dấu Giám đốc
+   - Người phụ trách khai Họ tên + Chức vụ (+ ý kiến) → bấm Xác nhận
+   - Ghi vào documents/{id}/mgr {name, role, note, at}
+   - In khối "ĐÃ XÁC NHẬN" trực tiếp vào trang cuối của file (pages &
+     rawPages) để bản tải về / bản đóng dấu luôn mang dấu xác nhận
+   - KHÔNG có xác nhận thì nút "Đóng dấu & Duyệt" bị khoá hoàn toàn
 ============================================================ */
 let mgrTargetId=null;
 
@@ -1076,7 +1303,7 @@ function openMgrModal(id){
   setTimeout(()=>document.getElementById('mgrName').focus(),80);
 }
 
-/* Khối dấu "ĐÃ XÁC NHẬN" vẽ bằng canvas → tiếng Việt luôn đúng font khi xuất file */
+/* Khối dấu "ĐÃ XÁC NHẬN" vẽ bằng canvas → tiếng Việt luôn đúng khi xuất file */
 function buildMgrStampDataURL(name,role,note){
   const W=820,H=340,col='#12468f';
   const c=document.createElement('canvas');c.width=W;c.height=H;
@@ -1089,21 +1316,21 @@ function buildMgrStampDataURL(name,role,note){
   ctx.fillText('ĐÃ XÁC NHẬN',W/2,84);
   ctx.font='22px Arial,"Segoe UI",sans-serif';
   ctx.fillText('(Cấp quản lý / Người phụ trách bộ phận)',W/2,126);
-  fitText(ctx,name||'',W-90,44,'800');ctx.fillText(name||'',W/2,190);
-  if(role){fitText(ctx,role,W-110,28,'600');ctx.fillText(role,W/2,232);}
+  mgrFitText(ctx,name||'',W-90,44,'800');ctx.fillText(name||'',W/2,190);
+  if(role){mgrFitText(ctx,role,W-110,28,'600');ctx.fillText(role,W/2,232);}
   ctx.font='22px Arial,"Segoe UI",sans-serif';
   ctx.fillText('Ngày '+new Date().toLocaleDateString('vi-VN')+' · IDECO',W/2,282);
-  if(note){fitText(ctx,'“'+note+'”',W-90,20,'400');ctx.fillText('“'+note+'”',W/2,314);}
+  if(note){mgrFitText(ctx,'“'+note+'”',W-90,20,'400');ctx.fillText('“'+note+'”',W/2,314);}
   return c.toDataURL('image/png');
 }
-function fitText(ctx,txt,maxW,size,weight){
-  let s=size;
-  do{ ctx.font=weight+' '+s+'px Arial,"Segoe UI",sans-serif'; s-=1; }
-  while(ctx.measureText(txt).width>maxW && s>12);
+function mgrFitText(ctx,txt,maxW,size,weight){
+  let sz=size;
+  do{ ctx.font=weight+' '+sz+'px Arial,"Segoe UI",sans-serif'; sz-=1; }
+  while(ctx.measureText(txt).width>maxW && sz>12);
 }
 
-/* In khối xác nhận vào TRANG CUỐI. Nếu vùng góc dưới phải đã có nội dung
-   thì tự nối thêm dải trắng bên dưới trang → không bao giờ che mất chữ. */
+/* In khối xác nhận vào TRANG CUỐI; nếu góc dưới phải đã có nội dung
+   thì tự nối thêm dải trắng bên dưới → không bao giờ che mất chữ */
 async function drawMgrOnPage(src,stampSrc){
   const img=await loadImg(src), sImg=await loadImg(stampSrc);
   const W=img.naturalWidth,H=img.naturalHeight;
@@ -1134,7 +1361,7 @@ async function drawMgrOnPage(src,stampSrc){
   return c.toDataURL('image/jpeg',0.9);
 }
 async function bakeMgrIntoPages(pages,stampSrc){
-  const out=pages.slice();
+  const out=(pages||[]).slice();
   if(!out.length)return out;
   out[out.length-1]=await drawMgrOnPage(out[out.length-1],stampSrc);
   return out;
@@ -1153,16 +1380,20 @@ async function mgrConfirm(){
   localStorage.setItem('ideco_mgr_role',role);
   toast('Đang ghi xác nhận vào hồ sơ…');
   try{
-    const mgr={name,role,note:note||'',at:Date.now()};
-    const upd={mgr,updated:Date.now()};
+    const upd={mgr:{name,role,note:note||'',at:Date.now()},updated:Date.now()};
     if(d.type!=='file' && d.pages && d.pages.length){
       const stamp=buildMgrStampDataURL(name,role,note);
       const base=(d.mgrRawBackup||d.rawPages||d.pages);
-      if(!d.mgrRawBackup) upd.mgrRawBackup=base;           // giữ bản gốc để sửa/thu hồi
+      if(!d.mgrRawBackup) upd.mgrRawBackup=base;   // giữ bản gốc để sửa/thu hồi
       upd.rawPages=await bakeMgrIntoPages(base,stamp);
       upd.pages=upd.rawPages;
     }
     await db.ref('documents/'+id).update(upd);
+    if(cur&&cur.id===id){
+      cur.mgr=upd.mgr;
+      if(upd.rawPages){cur.mgrRawBackup=upd.mgrRawBackup||d.mgrRawBackup;cur.pages=upd.rawPages.slice();
+        if(document.getElementById('editor').style.display==='block'&&cur.type!=='file')renderPage();}
+    }
     toast('✅ Đã xác nhận: '+name+' — '+role);
   }catch(err){console.error(err);toast('Lỗi khi lưu xác nhận: '+err.message);}
 }
@@ -1176,6 +1407,9 @@ async function mgrRevoke(){
     const upd={mgr:null,updated:Date.now()};
     if(d.mgrRawBackup){upd.rawPages=d.mgrRawBackup;upd.pages=d.mgrRawBackup;upd.mgrRawBackup=null;}
     await db.ref('documents/'+id).update(upd);
+    if(cur&&cur.id===id){cur.mgr=null;
+      if(upd.rawPages){cur.pages=upd.rawPages.slice();cur.mgrRawBackup=null;
+        if(document.getElementById('editor').style.display==='block'&&cur.type!=='file')renderPage();}}
     toast('↩ Đã thu hồi xác nhận');
   }catch(err){toast('Lỗi: '+err.message);}
 }
@@ -1187,10 +1421,16 @@ let pendingNoticeId=null;
 async function saveDoc(approve){
   const name=document.getElementById('saveName').value.trim()||cur.name;
   if(approve){
+    /* KHOÁ QUY TRÌNH: không có xác nhận của cấp quản lý → không cho duyệt */
     const dNow=cur.id?(docs[cur.id]||{}):{};
-    if(!dNow.mgr && !cur.mgr){
-      if(!confirm('⚠️ HỒ SƠ CHƯA CÓ XÁC NHẬN CỦA CẤP QUẢN LÝ.\n\nTheo quy trình, người phụ trách bộ phận phải xác nhận (họ tên – chức vụ) trước khi Giám đốc đóng dấu duyệt.\n\nVẫn tiếp tục đóng dấu duyệt?')) return;
+    const mgr=dNow.mgr||cur.mgr||null;
+    if(!mgr){
+      toast('🔒 Chưa có xác nhận của cấp quản lý — không thể đóng dấu duyệt');
+      if(cur.id){ openMgrModal(cur.id); }
+      else{ alert('Hồ sơ chưa được lưu. Hãy bấm “Lưu (chờ duyệt)”, sau đó cấp quản lý xác nhận rồi mới đóng dấu duyệt.'); }
+      return;
     }
+    cur.mgr=mgr;
     approvalContext='doc';
     pendingApproveName=name;
     if(localStorage.getItem('ideco_appr_ok')==='1'){ commitSave(name,true); return; }
@@ -1216,7 +1456,9 @@ async function commitSave(name,approved){
       await db.ref('documents/'+id).set({
         name,type:'file',
         fileExt:cur.fileExt||'',fileMime:cur.fileMime||'',fileData:cur.fileData,
-        approved,updated:Date.now(),mgr:cur.mgr||null,
+        attachments:cur.attachments||[],
+        mgr:cur.mgr||null,
+        approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
       });
     }else{
@@ -1230,7 +1472,9 @@ async function commitSave(name,approved){
         pages:approved?outPages:cur.pages,
         rawPages:cur.pages,
         stamps:cur.stamps,
-        approved,updated:Date.now(),mgr:cur.mgr||null,mgrRawBackup:cur.mgrRawBackup||null,
+        attachments:cur.attachments||[],
+        mgr:cur.mgr||null,mgrRawBackup:cur.mgrRawBackup||null,
+        approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
       });
     }
@@ -1244,7 +1488,8 @@ function openDoc(id){
   const d=docs[id];if(!d)return;
   if(d.type==='file'){
     cur={id,name:d.name,type:'file',fileExt:d.fileExt,fileMime:d.fileMime,fileData:d.fileData,
-      approved:d.approved,approvedAt:d.approvedAt,mgr:d.mgr||null};
+      attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,
+      mgr:d.mgr||null};
     curPage=0;selectedStamp=null;openEditor();return;
   }
   const stamps=d.stamps||{};
@@ -1253,7 +1498,8 @@ function openDoc(id){
     if(st.xr==null && st.x!=null){ st.xr=0.4; st.yr=0.42; st.wr=(st.kind==='seal'?SEAL_WR:STAMP_WR); }
   }));
   cur={id,name:d.name,type:d.type,pages:(d.rawPages||d.pages).slice(),stamps,
-    approved:d.approved,approvedAt:d.approvedAt,mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null};
+    attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,
+    mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null};
   curPage=0;selectedStamp=null;openEditor();
 }
 function delDoc(id){if(!confirm('Xoá tài liệu này?'))return;
@@ -1262,31 +1508,34 @@ function delDoc(id){if(!confirm('Xoá tài liệu này?'))return;
 /* ===== DOWNLOAD ===== */
 async function downloadCurrent(){
   if(cur.type==='file'){
-    const a=document.createElement('a');a.href=cur.fileData;
-    a.download=(document.getElementById('saveName').value.trim()||cur.name)+'.'+(cur.fileExt||'xlsx');
-    a.click();toast('⬇ Đã tải xuống');return;
+    saveDataURL(cur.fileData,(document.getElementById('saveName').value.trim()||cur.name)+'.'+(cur.fileExt||'xlsx'));
+    downloadAttachments(cur.attachments);
+    toast('⬇ Đã tải xuống');return;
   }
   toast('Đang tạo file…');
   const canvases=[];
   for(let i=0;i<cur.pages.length;i++)canvases.push(await renderStampedPage(i));
   await outputCanvases(canvases,cur.type,document.getElementById('saveName').value.trim()||cur.name);
+  downloadAttachments(cur.attachments);
 }
 async function downloadDoc(id){
   const d=docs[id];if(!d)return;
   if(d.type==='file'){
-    const a=document.createElement('a');a.href=d.fileData;a.download=d.name+'.'+(d.fileExt||'xlsx');
-    a.click();toast('⬇ Đã tải xuống');return;
+    saveDataURL(d.fileData,d.name+'.'+(d.fileExt||'xlsx'));
+    downloadAttachments(d.attachments);
+    toast('⬇ Đã tải xuống');return;
   }
   toast('Đang chuẩn bị file…');
   const canvases=[];
   for(const p of d.pages)canvases.push(await loadCanvas(p));
   await outputCanvases(canvases,d.type,d.name);
+  downloadAttachments(d.attachments);
 }
 function loadCanvas(src){return new Promise(res=>{const img=new Image();
   img.onload=()=>{const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;
     c.getContext('2d').drawImage(img,0,0);res(c);};img.src=src;});}
 async function outputCanvases(canvases,type,name){
-  if(type==='pdf'||canvases.length>1){
+  if(type==='pdf'||type==='excel'||canvases.length>1){
     const {jsPDF}=window.jspdf;const first=canvases[0];
     const pdf=new jsPDF({orientation:first.width>first.height?'l':'p',unit:'px',format:[first.width,first.height]});
     canvases.forEach((c,i)=>{if(i>0)pdf.addPage([c.width,c.height],c.width>c.height?'l':'p');
@@ -1335,7 +1584,8 @@ function closeModal(id){document.getElementById(id).classList.remove('show');
    TAB SOẠN ĐỀ XUẤT (bổ sung — không đổi chức năng gốc)
    1. Form khai báo: Người lập, Bộ phận, Ngày lập, V/v, Số VB
    2. Soạn nội dung kiểu Word + trang A4 xem trước (tự điền từ form)
-   3. Xác nhận của quản lý: gõ tên (VD: Thương Hoài - Quản lý)
+   3. Đính kèm Excel / PDF / Word — có thể gộp thành trang để đóng dấu
+   4. Xác nhận của quản lý: gõ tên (VD: Thương Hoài - Quản lý)
       + chèn/tải ảnh chữ ký — KHÔNG cần mật khẩu
    "Lưu (chờ duyệt)" → documents (approved:false);
    bước "Đóng dấu & Duyệt" cuối vẫn qua mật khẩu như bản gốc.
@@ -1348,7 +1598,7 @@ function openCompose(){
   document.getElementById('compose').style.display='block';
   if(!document.getElementById('cmpDate').value)
     document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
-  cmpFillSigPick();cmpSync();
+  cmpFillSigPick();renderCmpAttList();cmpSync();
   window.scrollTo(0,0);
   requestAnimationFrame(cmpFit);
 }
@@ -1384,7 +1634,17 @@ function cmpSync(){
   g('shNo').textContent = g('cmpNo').value.trim()||'……';
   g('shSignName').textContent = name||'\u00a0';
   g('shOkName').textContent = g('cmpOkName').value.trim()||'\u00a0';
+  cmpSyncAttNote();
   requestAnimationFrame(cmpFit);
+}
+/* Ghi dòng "Tài liệu đính kèm" ngay trên tờ A4 để người duyệt thấy rõ */
+function cmpSyncAttNote(){
+  const note=document.getElementById('cmpAttNote');
+  if(!note)return;
+  if(!cmpAttachments.length){note.style.display='none';note.innerHTML='';return;}
+  note.style.display='block';
+  note.innerHTML='<b>Tài liệu đính kèm:</b> '+
+    cmpAttachments.map((a,i)=>(i+1)+'. '+esc(a.name)).join(' &nbsp; ');
 }
 
 /* --- Thanh công cụ kiểu Word --- */
@@ -1401,6 +1661,47 @@ document.getElementById('cmpSize').addEventListener('change',e=>{
 document.getElementById('cmpColor').addEventListener('input',e=>{
   document.execCommand('foreColor',false,e.target.value);document.getElementById('cmpEditor').focus();});
 document.getElementById('cmpEditor').addEventListener('input',()=>requestAnimationFrame(cmpFit));
+
+/* ===== ĐÍNH KÈM EXCEL / PDF / WORD CHO ĐỀ XUẤT ===== */
+let cmpAttachments=[];
+const cmpAttInp=document.getElementById('cmpAttInp');
+cmpAttInp.addEventListener('change',async e=>{
+  const files=[...e.target.files];
+  for(const f of files){
+    if(f.size>MAX_ATT_MB*1024*1024){toast(`⚠️ "${f.name}" nặng hơn ${MAX_ATT_MB}MB — đã bỏ qua`);continue;}
+    if(!(isExcelName(f.name)||isPdfName(f.name)||isWordName(f.name))){
+      toast(`⚠️ "${f.name}" không phải Excel/PDF/Word — đã bỏ qua`);continue;}
+    toast('Đang nạp '+f.name+'…');
+    const data=await fileToDataURL(f);
+    cmpAttachments.push({name:f.name,type:f.type||'',size:f.size,data,
+      merge:isPdfName(f.name)||isExcelName(f.name)});
+  }
+  renderCmpAttList();cmpSyncAttNote();requestAnimationFrame(cmpFit);
+  e.target.value='';
+});
+function renderCmpAttList(){
+  const box=document.getElementById('cmpAttList');
+  if(!box)return;
+  if(!cmpAttachments.length){
+    box.innerHTML='<div class="muted">Chưa có tệp nào. Bảng giá Excel và hồ sơ PDF nên bật gộp để duyệt một lần.</div>';
+    return;
+  }
+  box.innerHTML=cmpAttachments.map((a,i)=>{
+    const mergeable=isPdfName(a.name)||isExcelName(a.name);
+    return `
+    <div class="att-item">
+      <span class="ic">${attIcon(a)}</span>
+      <span class="nm">${esc(a.name)}</span>
+      <span class="sz">${fmtSize(a.size)}</span>
+      ${mergeable
+        ? `<label class="mg"><input type="checkbox" ${a.merge?'checked':''} onchange="toggleCmpAttMerge(${i},this.checked)"> Gộp &amp; đóng dấu</label>`
+        : `<span class="nomg">Word: chỉ lưu tệp gốc</span>`}
+      <button class="btn gray sm" onclick="removeCmpAtt(${i})">🗑</button>
+    </div>`;
+  }).join('');
+}
+function toggleCmpAttMerge(i,v){if(cmpAttachments[i])cmpAttachments[i].merge=v;}
+function removeCmpAtt(i){cmpAttachments.splice(i,1);renderCmpAttList();cmpSyncAttNote();requestAnimationFrame(cmpFit);}
 
 /* --- Chữ ký người xác nhận: chọn từ kho hoặc tải mới (không mật khẩu) --- */
 function cmpFillSigPick(){
@@ -1468,11 +1769,16 @@ async function composeSave(){
   toast('Đang tạo văn bản…');
   try{
     const canvas=await cmpRenderSheet();
-    const page=canvas.toDataURL('image/jpeg',0.9);
+    const pages=[canvas.toDataURL('image/jpeg',0.9)];
+    if(cmpAttachments.some(a=>a.merge)){
+      toast('Đang gộp file đính kèm vào văn bản…');
+      pages.push(...await attachmentToPages(cmpAttachments));
+    }
     const id=db.ref('documents').push().key;
     await db.ref('documents/'+id).set({
-      name:cmpDocName(),type:'image',
-      pages:[page],rawPages:[page],stamps:{},
+      name:cmpDocName(),type:pages.length>1?'pdf':'image',
+      pages,rawPages:pages,stamps:{},
+      attachments:cmpAttachments.map(a=>({name:a.name,type:a.type||'',size:a.size||0,data:a.data,merge:!!a.merge})),
       approved:false,updated:Date.now(),approvedAt:null,
       meta:{
         nguoiLap:document.getElementById('cmpName').value.trim(),
@@ -1481,12 +1787,14 @@ async function composeSave(){
         xacNhan:document.getElementById('cmpOkName').value.trim()
       }
     });
-    toast('✅ Đã lưu — văn bản chuyển vào danh sách CHỜ DUYỆT');
+    toast(pages.length>1
+      ?`✅ Đã lưu ${pages.length} trang (kèm file) — chuyển vào danh sách CHỜ DUYỆT`
+      :'✅ Đã lưu — văn bản chuyển vào danh sách CHỜ DUYỆT');
     closeCompose();
   }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
 }
 
-/* --- Tải PDF bản nháp --- */
+/* --- Tải PDF bản nháp (kèm các trang Excel/PDF đã gộp) --- */
 async function composePdf(){
   toast('Đang xuất PDF…');
   try{
@@ -1494,7 +1802,18 @@ async function composePdf(){
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'p',unit:'px',format:[canvas.width,canvas.height]});
     pdf.addImage(canvas.toDataURL('image/jpeg',0.9),'JPEG',0,0,canvas.width,canvas.height);
+    if(cmpAttachments.some(a=>a.merge)){
+      toast('Đang gộp file đính kèm…');
+      const extra=await attachmentToPages(cmpAttachments);
+      for(const src of extra){
+        const c=await loadCanvas(src);
+        pdf.addPage([c.width,c.height],c.width>c.height?'l':'p');
+        pdf.addImage(c.toDataURL('image/jpeg',0.9),'JPEG',0,0,c.width,c.height);
+      }
+    }
     pdf.save(cmpDocName()+'.pdf');
+    // Word không gộp được → tải riêng tệp gốc
+    downloadAttachments(cmpAttachments.filter(a=>!a.merge));
     toast('⬇ Đã tải PDF');
   }catch(err){toast('Lỗi: '+err.message);}
 }
@@ -1502,13 +1821,14 @@ async function composePdf(){
 /* --- Soạn mới: chỉ hỏi khi đang có nội dung --- */
 function composeClear(){
   const hasContent=document.getElementById('cmpEditor').textContent.trim()
-    ||document.getElementById('cmpName').value.trim();
-  if(hasContent && !confirm('Bắt đầu văn bản mới? Nội dung hiện tại sẽ bị xoá.'))return;
+    ||document.getElementById('cmpName').value.trim()||cmpAttachments.length;
+  if(hasContent && !confirm('Bắt đầu văn bản mới? Nội dung và tệp đính kèm hiện tại sẽ bị xoá.'))return;
   document.getElementById('cmpEditor').innerHTML='';
   ['cmpName','cmpOkName','cmpSubject','cmpNo'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('cmpOkSigPick').value='';
   document.getElementById('cmpOkSigImg').innerHTML='';
   document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
+  cmpAttachments=[];renderCmpAttList();
   cmpSync();
   toast('🧹 Đã sẵn sàng soạn văn bản mới');
 }
@@ -1517,8 +1837,8 @@ function composeClear(){
    TAB BGĐ THÔNG BÁO
    Trang dành cho Ban Giám Đốc soạn & công bố văn bản/thông báo
    chính thức cho nhân viên: viết nội dung kiểu Word (như soạn đề
-   xuất), đính kèm PDF/Word, và duyệt bằng mật khẩu + đóng dấu
-   "ĐÃ DUYỆT" giống hệt trang tải hồ sơ lên duyệt.
+   xuất), đính kèm Excel/PDF/Word, và duyệt bằng mật khẩu + đóng
+   dấu "ĐÃ DUYỆT" giống hệt trang tải hồ sơ lên duyệt.
    Lưu trên node Firebase riêng: notices/
 ============================================================ */
 let notices={};
@@ -1617,12 +1937,15 @@ document.getElementById('ntcColor').addEventListener('input',e=>{
   document.execCommand('foreColor',false,e.target.value);document.getElementById('ntcEditor').focus();});
 document.getElementById('ntcEditor').addEventListener('input',()=>requestAnimationFrame(ntcFit));
 
-/* --- Đính kèm PDF / Word --- */
+/* --- Đính kèm Excel / PDF / Word --- */
 document.getElementById('ntcAttInp').addEventListener('change',async e=>{
   const files=[...e.target.files];
   for(const f of files){
+    if(f.size>MAX_ATT_MB*1024*1024){toast(`⚠️ "${f.name}" nặng hơn ${MAX_ATT_MB}MB — đã bỏ qua`);continue;}
+    if(!(isExcelName(f.name)||isPdfName(f.name)||isWordName(f.name))){
+      toast(`⚠️ "${f.name}" không phải Excel/PDF/Word — đã bỏ qua`);continue;}
     const data=await fileToDataURL(f);
-    ntcAttachments.push({name:f.name,type:f.type,data});
+    ntcAttachments.push({name:f.name,type:f.type||'',size:f.size,data});
   }
   renderNtcAttList();
   e.target.value='';
@@ -1631,8 +1954,10 @@ function renderNtcAttList(){
   const box=document.getElementById('ntcAttList');
   if(!ntcAttachments.length){box.innerHTML='';return;}
   box.innerHTML=ntcAttachments.map((a,i)=>`
-    <div class="row" style="justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px">
-      <span>${a.type==='application/pdf'?'📕':'📄'} ${esc(a.name)}</span>
+    <div class="att-item">
+      <span class="ic">${attIcon(a)}</span>
+      <span class="nm">${esc(a.name)}</span>
+      <span class="sz">${fmtSize(a.size)}</span>
       <button class="btn gray sm" onclick="removeNtcAtt(${i})">🗑</button>
     </div>`).join('');
 }
@@ -1776,9 +2101,7 @@ async function downloadNotice(id){
     const pdf=new jsPDF({orientation:'p',unit:'px',format:[c.width,c.height]});
     pdf.addImage(c.toDataURL('image/jpeg',0.9),'JPEG',0,0,c.width,c.height);
     pdf.save(d.name+'.pdf');
-    (d.attachments||[]).forEach((a,i)=>{
-      setTimeout(()=>{const el=document.createElement('a');el.href=a.data;el.download=a.name;el.click();},300*(i+1));
-    });
+    downloadAttachments(d.attachments);
     toast('⬇ Đã tải thông báo');
   }catch(err){toast('Lỗi: '+err.message);}
 }
@@ -1786,6 +2109,9 @@ function delNotice(id){
   if(!confirm('Xoá thông báo này?'))return;
   db.ref('notices/'+id).remove().then(()=>toast('Đã xoá'));
 }
+
+/* --- Khởi tạo danh sách đính kèm rỗng khi tải trang --- */
+renderCmpAttList();
 </script>
 </body>
 </html>
