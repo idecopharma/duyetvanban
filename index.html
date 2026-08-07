@@ -380,7 +380,7 @@
         </div>
       </div>
       <div class="row" style="margin-top:12px">
-        <button class="btn" onclick="saveDoc(false)">💾 Lưu (chờ duyệt)</button>
+        <button class="btn" id="btnSaveDraft" onclick="saveDoc(false)">💾 Lưu (chờ duyệt)</button>
         <button class="btn green" id="btnApprove" onclick="saveDoc(true)">✅ Đóng dấu & Duyệt</button>
         <button class="btn gray" onclick="downloadCurrent()">⬇ Tải xuống</button>
       </div>
@@ -541,7 +541,7 @@
 
     <div class="card">
       <div class="row">
-        <button class="btn" style="background:#e08600" onclick="composeSave()">💾 Lưu (chờ duyệt)</button>
+        <button class="btn" id="cmpSaveBtn" style="background:#e08600" onclick="composeSave()">💾 Lưu (chờ duyệt)</button>
         <button class="btn ghost" onclick="composePdf()">⬇ Tải PDF bản nháp</button>
         <button class="btn gray" onclick="composeClear()">🧹 Soạn mới</button>
       </div>
@@ -814,24 +814,39 @@ function renderList(){
   if(curFilter==='ok') arr=arr.filter(d=>d.approved);
   if(curFilter==='mgrwait') arr=arr.filter(d=>!d.approved && !d.mgr);
   if(!arr.length){el.innerHTML=`<div class="empty"><div class="ico">📄</div>Chưa có tài liệu nào</div>`;return;}
-  el.innerHTML=arr.map(d=>`
+  el.innerHTML=arr.map(d=>{
+    const isCompose=!!d.composeSource;
+    const submitted=!!d.submittedAt;
+    const editAction = isCompose
+      ? (d.approved||submitted
+          ? `<button class="btn ghost sm" onclick="openDoc('${d.id}')" title="Văn bản đã gửi BGĐ/đã duyệt — chỉ xem">👁️ Xem</button>`
+          : (d.mgr
+              ? `<button class="btn ghost sm" onclick="requestComposeEdit('${d.id}')" title="Phải thu hồi xác nhận trước khi sửa">🔒 Muốn sửa</button>`
+              : `<button class="btn ghost sm" onclick="openComposeEdit('${d.id}')">✏️ Sửa đề xuất</button>`))
+      : `<button class="btn ghost sm" onclick="openDoc('${d.id}')">✏️</button>`;
+    const submitAction = d.approved ? '' : (submitted
+      ? `<button class="btn sm locked" style="background:#6b7280" disabled>📨 Đã gửi BGĐ</button>`
+      : `<button class="btn sm" style="background:#e08600" onclick="broadcastPending('${d.id}')">🔔 Xin duyệt</button>`);
+    return `
     <div class="doc-item">
       <div class="thumb">${d.type==='pdf'?'📕':(d.type==='excel'?'📊':(d.type==='file'?'📎':'🖼️'))}</div>
       <div class="info">
         <b>${esc(d.name)}</b>
-        <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':'⏳ Chờ duyệt'}</span>
+        <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':(submitted?'📨 Đã gửi BGĐ':'⏳ Chờ duyệt')}</span>
         ${d.mgr?`<span class="badge mgr">✍️ Đã xác nhận</span>`:''}
         <span class="muted"> · ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</span>
         ${mgrLineHTML(d)}
+        ${submitted&&!d.approved?`<div class="mgrline ok" style="color:#7c3f00">🔒 Đã trình Ban Giám Đốc lúc ${fmtDate(d.submittedAt)} — nội dung đã khóa, sai sót phải lập đề xuất mới.</div>`:''}
       </div>
       <div class="row" style="gap:6px">
-        ${d.approved?'':`<button class="btn sm" style="background:${d.mgr?'#5b7fa6':'#12468f'}" onclick="openMgrModal('${d.id}')">✍️ ${d.mgr?'Sửa xác nhận':'Xác nhận QL'}</button>`}
-        ${d.approved?'':`<button class="btn sm" style="background:#e08600" onclick="broadcastPending('${d.id}')">🔔 Xin duyệt</button>`}
+        ${d.approved||submitted?'':`<button class="btn sm" style="background:${d.mgr?'#5b7fa6':'#12468f'}" onclick="openMgrModal('${d.id}')">✍️ ${d.mgr?'Sửa xác nhận':'Xác nhận QL'}</button>`}
+        ${submitAction}
         <button class="btn green sm" onclick="downloadDoc('${d.id}')">⬇ Tải</button>
-        <button class="btn ghost sm" onclick="openDoc('${d.id}')">✏️</button>
+        ${editAction}
         <button class="btn gray sm" onclick="delDoc('${d.id}')">🗑</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 /* Dòng trạng thái xác nhận của cấp quản lý hiển thị trong danh sách */
 function mgrLineHTML(d){
@@ -1024,6 +1039,11 @@ function openEditor(){
   document.getElementById('stampArea').style.display=isFile?'none':'block';
   document.getElementById('fileOnlyBox').style.display=isFile?'block':'none';
   renderEdAttList();renderEdMgrBar();
+  const dState=cur.id?(docs[cur.id]||{}):{};
+  const draftBtn=document.getElementById('btnSaveDraft');
+  if(draftBtn)draftBtn.style.display=(dState.approved||dState.submittedAt)?'none':'inline-flex';
+  const nameInp=document.getElementById('saveName');
+  if(nameInp){nameInp.readOnly=!!(dState.approved||dState.submittedAt);nameInp.title=nameInp.readOnly?'Văn bản đã gửi BGĐ/đã duyệt — tên tài liệu đã khóa':'';}
   if(isFile){
     document.getElementById('fileOnlyInfo').innerHTML=
       `<div class="ico">📎</div><div style="font-weight:700">${esc(cur.name)}.${esc(cur.fileExt||'')}</div>
@@ -1292,6 +1312,7 @@ let mgrTargetId=null;
 function openMgrModal(id){
   const d=docs[id]; if(!d){toast('Không tìm thấy hồ sơ');return;}
   if(d.approved){toast('Hồ sơ đã duyệt — không thể thay đổi xác nhận');return;}
+  if(d.submittedAt){toast('Hồ sơ đã gửi Ban Giám Đốc — không thể sửa/thu hồi xác nhận');return;}
   mgrTargetId=id;
   document.getElementById('mgrDocName').textContent='📄 '+d.name;
   document.getElementById('mgrName').value = d.mgr?d.mgr.name : (localStorage.getItem('ideco_mgr_name')||'');
@@ -1401,6 +1422,7 @@ async function mgrConfirm(){
 async function mgrRevoke(){
   const id=mgrTargetId, d=docs[id];
   if(!d)return;
+  if(d.approved||d.submittedAt){toast('Hồ sơ đã gửi BGĐ/đã duyệt — không thể thu hồi xác nhận');return;}
   if(!confirm('Thu hồi xác nhận của cấp quản lý trên hồ sơ này?'))return;
   closeModal('mgrModal');
   try{
@@ -1420,6 +1442,9 @@ let approvalContext='doc'; // 'doc' | 'notice' | 'noticeApprove'
 let pendingNoticeId=null;
 async function saveDoc(approve){
   const name=document.getElementById('saveName').value.trim()||cur.name;
+  const dState=cur&&cur.id?(docs[cur.id]||{}):{};
+  if(!approve && (dState.approved||dState.submittedAt)){toast('🔒 Văn bản đã gửi BGĐ/đã duyệt — không thể lưu chỉnh sửa');return;}
+  if(approve && dState.approved){toast('Hồ sơ này đã được duyệt');return;}
   if(approve){
     /* KHOÁ QUY TRÌNH: không có xác nhận của cấp quản lý → không cho duyệt */
     const dNow=cur.id?(docs[cur.id]||{}):{};
@@ -1457,6 +1482,8 @@ async function commitSave(name,approved){
         name,type:'file',
         fileExt:cur.fileExt||'',fileMime:cur.fileMime||'',fileData:cur.fileData,
         attachments:cur.attachments||[],
+        composeSource:(docs[id]&&docs[id].composeSource)||cur.composeSource||null,
+        submittedAt:(docs[id]&&docs[id].submittedAt)||cur.submittedAt||null,
         mgr:cur.mgr||null,
         approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
@@ -1473,6 +1500,8 @@ async function commitSave(name,approved){
         rawPages:cur.pages,
         stamps:cur.stamps,
         attachments:cur.attachments||[],
+        composeSource:(docs[id]&&docs[id].composeSource)||cur.composeSource||null,
+        submittedAt:(docs[id]&&docs[id].submittedAt)||cur.submittedAt||null,
         mgr:cur.mgr||null,mgrRawBackup:cur.mgrRawBackup||null,
         approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
@@ -1488,8 +1517,8 @@ function openDoc(id){
   const d=docs[id];if(!d)return;
   if(d.type==='file'){
     cur={id,name:d.name,type:'file',fileExt:d.fileExt,fileMime:d.fileMime,fileData:d.fileData,
-      attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,
-      mgr:d.mgr||null};
+      attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,submittedAt:d.submittedAt||null,
+      composeSource:d.composeSource||null,mgr:d.mgr||null};
     curPage=0;selectedStamp=null;openEditor();return;
   }
   const stamps=d.stamps||{};
@@ -1498,12 +1527,16 @@ function openDoc(id){
     if(st.xr==null && st.x!=null){ st.xr=0.4; st.yr=0.42; st.wr=(st.kind==='seal'?SEAL_WR:STAMP_WR); }
   }));
   cur={id,name:d.name,type:d.type,pages:(d.rawPages||d.pages).slice(),stamps,
-    attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,
-    mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null};
+    attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,submittedAt:d.submittedAt||null,
+    composeSource:d.composeSource||null,mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null};
   curPage=0;selectedStamp=null;openEditor();
 }
-function delDoc(id){if(!confirm('Xoá tài liệu này?'))return;
-  db.ref('documents/'+id).remove().then(()=>toast('Đã xoá'));}
+function delDoc(id){
+  const d=docs[id];if(!d)return;
+  if(d.approved||d.submittedAt){toast('🔒 Văn bản đã gửi BGĐ/đã duyệt — không được xoá khỏi hồ sơ');return;}
+  if(!confirm('Xoá tài liệu này?'))return;
+  db.ref('documents/'+id).remove().then(()=>toast('Đã xoá'));
+}
 
 /* ===== DOWNLOAD ===== */
 async function downloadCurrent(){
@@ -1563,15 +1596,23 @@ function broadcastLive(){
   }).then(()=>toast(`📢 Đã phát thông báo LIVE (${approved} văn bản đã duyệt)`))
     .catch(e=>toast('Lỗi: '+e.message));
 }
-function broadcastPending(id){
+async function broadcastPending(id){
   const d=docs[id];if(!d)return;
-  db.ref('broadcasts/current').set({
-    ts:Date.now(),
-    kind:'pending',
-    title:'XIN PHÉP CHỜ DUYỆT',
-    lastDoc:d.name
-  }).then(()=>toast('🔔 Đã gửi thông báo XIN DUYỆT'))
-    .catch(e=>toast('Lỗi: '+e.message));
+  if(d.approved){toast('Hồ sơ đã được duyệt');return;}
+  if(d.submittedAt){toast('📨 Hồ sơ này đã gửi Ban Giám Đốc — nội dung đang bị khóa');return;}
+  if(!d.mgr){
+    toast('🔒 Phải có xác nhận của cấp quản lý trước khi gửi Ban Giám Đốc');
+    openMgrModal(id);return;
+  }
+  if(!confirm('Gửi hồ sơ này lên Ban Giám Đốc duyệt?\n\nSau khi gửi, nội dung sẽ bị KHÓA và không thể chỉnh sửa. Nếu sai sót phải lập đề xuất mới.'))return;
+  const ts=Date.now();
+  try{
+    await db.ref('documents/'+id).update({submittedAt:ts,updated:ts});
+    await db.ref('broadcasts/current').set({
+      ts,kind:'pending',title:'XIN PHÉP CHỜ DUYỆT',lastDoc:d.name,docId:id
+    });
+    toast('📨 Đã gửi Ban Giám Đốc — văn bản đã khóa chỉnh sửa');
+  }catch(e){toast('Lỗi: '+e.message);}
 }
 
 /* ===== MODAL ===== */
@@ -1591,13 +1632,17 @@ function closeModal(id){document.getElementById(id).classList.remove('show');
    bước "Đóng dấu & Duyệt" cuối vẫn qua mật khẩu như bản gốc.
 ============================================================ */
 const CMP_LOGO='https://cdn.imgpile.com/f/Yl3ncwx_xl.png';
+let curComposeEditId=null; // null = soạn mới; có id = đang sửa đề xuất đã lưu
 
 function openCompose(){
+  // Nút trên header luôn là SOẠN MỚI, không vô tình ghi đè hồ sơ đang sửa trước đó
+  curComposeEditId=null;
   document.getElementById('home').style.display='none';
   document.getElementById('editor').style.display='none';
   document.getElementById('compose').style.display='block';
   if(!document.getElementById('cmpDate').value)
     document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
+  const sb=document.getElementById('cmpSaveBtn');if(sb)sb.textContent='💾 Lưu (chờ duyệt)';
   cmpFillSigPick();renderCmpAttList();cmpSync();
   window.scrollTo(0,0);
   requestAnimationFrame(cmpFit);
@@ -1766,7 +1811,14 @@ function cmpDocName(){
 async function composeSave(){
   if(!document.getElementById('cmpName').value.trim()){toast('⚠️ Nhập tên người lập đề xuất (mục 1)');return;}
   if(!document.getElementById('cmpEditor').textContent.trim()){toast('⚠️ Nội dung đề xuất đang trống (mục 2)');return;}
-  toast('Đang tạo văn bản…');
+
+  const old=curComposeEditId?(docs[curComposeEditId]||null):null;
+  if(old){
+    if(old.approved||old.submittedAt){toast('🔒 Văn bản đã gửi Ban Giám Đốc/đã duyệt — không được chỉnh sửa');return;}
+    if(old.mgr){toast('🔒 Phải thu hồi xác nhận quản lý trước khi chỉnh sửa');openMgrModal(curComposeEditId);return;}
+  }
+
+  toast(curComposeEditId?'Đang cập nhật đề xuất…':'Đang tạo văn bản…');
   try{
     const canvas=await cmpRenderSheet();
     const pages=[canvas.toDataURL('image/jpeg',0.9)];
@@ -1774,24 +1826,82 @@ async function composeSave(){
       toast('Đang gộp file đính kèm vào văn bản…');
       pages.push(...await attachmentToPages(cmpAttachments));
     }
-    const id=db.ref('documents').push().key;
-    await db.ref('documents/'+id).set({
+    const id=curComposeEditId||db.ref('documents').push().key;
+    const source={
+      version:1,
+      name:document.getElementById('cmpName').value.trim(),
+      dept:document.getElementById('cmpDept').value,
+      date:document.getElementById('cmpDate').value,
+      subject:document.getElementById('cmpSubject').value,
+      no:document.getElementById('cmpNo').value,
+      editorHtml:document.getElementById('cmpEditor').innerHTML,
+      okName:document.getElementById('cmpOkName').value.trim(),
+      okSig:document.getElementById('cmpOkSigPick').value||''
+    };
+    const payload={
       name:cmpDocName(),type:pages.length>1?'pdf':'image',
       pages,rawPages:pages,stamps:{},
       attachments:cmpAttachments.map(a=>({name:a.name,type:a.type||'',size:a.size||0,data:a.data,merge:!!a.merge})),
-      approved:false,updated:Date.now(),approvedAt:null,
-      meta:{
-        nguoiLap:document.getElementById('cmpName').value.trim(),
-        boPhan:document.getElementById('cmpDept').value,
-        ngayLap:document.getElementById('cmpDate').value,
-        xacNhan:document.getElementById('cmpOkName').value.trim()
-      }
-    });
-    toast(pages.length>1
-      ?`✅ Đã lưu ${pages.length} trang (kèm file) — chuyển vào danh sách CHỜ DUYỆT`
-      :'✅ Đã lưu — văn bản chuyển vào danh sách CHỜ DUYỆT');
+      composeSource:source,
+      mgr:null,mgrRawBackup:null,
+      approved:false,updated:Date.now(),approvedAt:null,submittedAt:null,
+      meta:{nguoiLap:source.name,boPhan:source.dept,ngayLap:source.date,xacNhan:source.okName}
+    };
+    await db.ref('documents/'+id).set(payload);
+    toast(curComposeEditId?'✅ Đã cập nhật — hồ sơ quay lại CHỜ XÁC NHẬN / CHỜ DUYỆT':'✅ Đã lưu — văn bản chuyển vào danh sách CHỜ DUYỆT');
+    curComposeEditId=null;
+    composeResetNoConfirm();
     closeCompose();
   }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
+}
+
+function composeResetNoConfirm(){
+  curComposeEditId=null;
+  document.getElementById('cmpEditor').innerHTML='';
+  ['cmpName','cmpOkName','cmpSubject','cmpNo'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('cmpDept').selectedIndex=0;
+  document.getElementById('cmpOkSigPick').value='';
+  document.getElementById('cmpOkSigImg').innerHTML='';
+  document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
+  cmpAttachments=[];renderCmpAttList();cmpSync();
+  const sb=document.getElementById('cmpSaveBtn');if(sb)sb.textContent='💾 Lưu (chờ duyệt)';
+}
+
+function requestComposeEdit(id){
+  const d=docs[id];if(!d)return;
+  if(d.approved||d.submittedAt){toast('🔒 Văn bản đã gửi BGĐ/đã duyệt — không được chỉnh sửa');return;}
+  if(d.mgr){
+    alert('Văn bản đã được cấp quản lý XÁC NHẬN.\n\nMuốn chỉnh sửa, phải bấm “Thu hồi xác nhận” trước. Sau khi thu hồi xong, bấm “Sửa đề xuất” để chỉnh sửa và gửi chờ duyệt lại.');
+    openMgrModal(id);return;
+  }
+  openComposeEdit(id);
+}
+
+function openComposeEdit(id){
+  const d=docs[id];if(!d){toast('Không tìm thấy hồ sơ');return;}
+  if(!d.composeSource){toast('Hồ sơ này không có dữ liệu soạn thảo nguồn — chỉ có thể xem bản đã lưu');openDoc(id);return;}
+  if(d.approved||d.submittedAt){toast('🔒 Văn bản đã gửi Ban Giám Đốc/đã duyệt — chỉ được xem, không được sửa');openDoc(id);return;}
+  if(d.mgr){requestComposeEdit(id);return;}
+  const x=d.composeSource;
+  curComposeEditId=id;
+  document.getElementById('home').style.display='none';
+  document.getElementById('editor').style.display='none';
+  document.getElementById('compose').style.display='block';
+  document.getElementById('cmpName').value=x.name||'';
+  document.getElementById('cmpDept').value=x.dept||'Kinh doanh';
+  document.getElementById('cmpDate').value=x.date||new Date().toISOString().slice(0,10);
+  document.getElementById('cmpSubject').value=x.subject||'';
+  document.getElementById('cmpNo').value=x.no||'';
+  document.getElementById('cmpEditor').innerHTML=x.editorHtml||'';
+  document.getElementById('cmpOkName').value=x.okName||'';
+  cmpAttachments=(d.attachments||[]).map(a=>({...a}));
+  cmpFillSigPick();
+  document.getElementById('cmpOkSigPick').value=x.okSig||'';
+  document.getElementById('cmpOkSigImg').innerHTML=x.okSig?'<img src="'+x.okSig+'">':'';
+  renderCmpAttList();cmpSync();
+  const sb=document.getElementById('cmpSaveBtn');if(sb)sb.textContent='💾 Cập nhật & chờ duyệt lại';
+  window.scrollTo(0,0);requestAnimationFrame(cmpFit);
+  toast('✏️ Đã mở bản nguồn — có thể chỉnh sửa và lưu chờ duyệt lại');
 }
 
 /* --- Tải PDF bản nháp (kèm các trang Excel/PDF đã gộp) --- */
@@ -1823,6 +1933,7 @@ function composeClear(){
   const hasContent=document.getElementById('cmpEditor').textContent.trim()
     ||document.getElementById('cmpName').value.trim()||cmpAttachments.length;
   if(hasContent && !confirm('Bắt đầu văn bản mới? Nội dung và tệp đính kèm hiện tại sẽ bị xoá.'))return;
+  curComposeEditId=null;
   document.getElementById('cmpEditor').innerHTML='';
   ['cmpName','cmpOkName','cmpSubject','cmpNo'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('cmpOkSigPick').value='';
@@ -1830,6 +1941,7 @@ function composeClear(){
   document.getElementById('cmpDate').value=new Date().toISOString().slice(0,10);
   cmpAttachments=[];renderCmpAttList();
   cmpSync();
+  const sb=document.getElementById('cmpSaveBtn');if(sb)sb.textContent='💾 Lưu (chờ duyệt)';
   toast('🧹 Đã sẵn sàng soạn văn bản mới');
 }
 
