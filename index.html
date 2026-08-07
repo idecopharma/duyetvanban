@@ -1844,6 +1844,7 @@ function composeClear(){
 let notices={};
 let noticeFilter='all';
 let ntcAttachments=[];
+let curNoticeId=null; // null = đang soạn thông báo MỚI; có giá trị = đang SỬA thông báo đã lưu
 
 db.ref('notices').on('value',snap=>{notices=snap.val()||{};renderNoticeList();});
 db.ref('signatures').on('value',()=>{ setTimeout(ntcFillSigPick,0); });
@@ -1861,16 +1862,49 @@ function closeNotice(){
   document.getElementById('notice').style.display='none';
   document.getElementById('home').style.display='block';
 }
+function resetNoticeForm(){
+  document.getElementById('ntcName').value='';
+  document.getElementById('ntcDate').value='';
+  document.getElementById('ntcNo').value='';
+  document.getElementById('ntcSubject').value='';
+  document.getElementById('ntcEditor').innerHTML='';
+  document.getElementById('ntcSigImg').innerHTML='';
+  ntcAttachments=[];renderNtcAttList();
+  curNoticeId=null;
+}
 function openNoticeCompose(){
+  resetNoticeForm();
   document.getElementById('noticeCompose').style.display='block';
-  if(!document.getElementById('ntcDate').value)
-    document.getElementById('ntcDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('ntcDate').value=new Date().toISOString().slice(0,10);
   ntcFillSigPick();ntcSync();
   window.scrollTo(0,0);
   requestAnimationFrame(ntcFit);
 }
+/* --- Mở lại một thông báo đã lưu (chờ duyệt hoặc đã duyệt) để SỬA nội dung --- */
+function editNotice(id){
+  const d=notices[id];if(!d)return;
+  resetNoticeForm();
+  curNoticeId=id;
+  document.getElementById('noticeCompose').style.display='block';
+  document.getElementById('ntcName').value=d.issuer||'';
+  document.getElementById('ntcDate').value=d.date||new Date().toISOString().slice(0,10);
+  document.getElementById('ntcNo').value=d.no||'';
+  document.getElementById('ntcSubject').value=d.subject||'';
+  document.getElementById('ntcEditor').innerHTML=d.content||'';
+  ntcAttachments=(d.attachments||[]).map(a=>({...a}));
+  renderNtcAttList();
+  ntcFillSigPick();ntcSync();
+  window.scrollTo(0,0);
+  requestAnimationFrame(ntcFit);
+  if(!d.content){
+    toast('⚠️ Thông báo này lưu trước khi có nút Sửa — không khôi phục được nội dung gốc, cần soạn lại mục 2');
+  }else if(d.approved){
+    toast('✏️ Đang sửa thông báo ĐÃ DUYỆT — lưu xong sẽ chuyển về "Chờ duyệt", cần duyệt lại mới công bố');
+  }
+}
 function closeNoticeCompose(){
   document.getElementById('noticeCompose').style.display='none';
+  curNoticeId=null;
 }
 
 function setNoticeFilter(f){
@@ -1895,6 +1929,7 @@ function renderNoticeList(){
       </div>
       <div class="row" style="gap:6px">
         ${d.approved?'':`<button class="btn green sm" onclick="approveNotice('${d.id}')">✅ Duyệt</button>`}
+        <button class="btn ghost sm" onclick="editNotice('${d.id}')">✏️ Sửa</button>
         <button class="btn sm" onclick="downloadNotice('${d.id}')">⬇ Tải</button>
         <button class="btn gray sm" onclick="delNotice('${d.id}')">🗑</button>
       </div>
@@ -2044,18 +2079,20 @@ async function commitNoticeSave(approved){
     const canvas=await ntcRenderSheet();
     let page=canvas.toDataURL('image/jpeg',0.9);
     if(approved) page=await stampImageDataURL(page);
-    const id=db.ref('notices').push().key;
+    const id=curNoticeId||db.ref('notices').push().key;
     await db.ref('notices/'+id).set({
       name:noticeDocName(),
       subject:document.getElementById('ntcSubject').value.trim(),
       no:document.getElementById('ntcNo').value.trim(),
       issuer:document.getElementById('ntcName').value.trim(),
       date:document.getElementById('ntcDate').value,
+      content:document.getElementById('ntcEditor').innerHTML,
       page,
       attachments:ntcAttachments||[],
       approved,updated:Date.now(),approvedAt:approved?Date.now():null
     });
     toast(approved?'✅ Đã duyệt & công bố thông báo':'💾 Đã lưu — chờ duyệt');
+    curNoticeId=null;
     ntcAttachments=[];renderNtcAttList();
     closeNoticeCompose();
   }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
