@@ -1075,7 +1075,7 @@ function renderEditContentAction(){
     return;
   }
   if(d.approved){
-    box.innerHTML='<b style="color:#137a3a">✅ Văn bản đã được Ban Giám Đốc duyệt.</b> Nội dung đã khóa. Nếu có sai sót phải lập hồ sơ mới.';
+    box.innerHTML='<b style="color:#137a3a">✅ Văn bản đã được Ban Giám Đốc duyệt.</b> Đang hiển thị <b>bản chính thức đã đóng dấu duyệt</b>. Nội dung đã khóa; nếu có sai sót phải lập hồ sơ mới.';
     return;
   }
   if(d.submittedAt){
@@ -1620,7 +1620,12 @@ function openDoc(id){
   Object.values(stamps).forEach(list=>(list||[]).forEach(st=>{
     if(st.xr==null && st.x!=null){ st.xr=0.4; st.yr=0.42; st.wr=(st.kind==='seal'?SEAL_WR:STAMP_WR); }
   }));
-  cur={id,name:d.name,type:d.type,pages:(d.rawPages||d.pages).slice(),stamps,
+  /* QUAN TRỌNG: hồ sơ đã BGĐ duyệt phải mở BẢN ĐÃ ĐÓNG DẤU (d.pages).
+     rawPages chỉ là bản nền trước khi đóng dấu để phục vụ nghiệp vụ trước duyệt.
+     Khi mở bản đã duyệt, không overlay lại stamps vì dấu đã được bake trực tiếp vào pages. */
+  const viewPages = d.approved ? (d.pages||d.rawPages||[]) : (d.rawPages||d.pages||[]);
+  const viewStamps = d.approved ? {} : stamps;
+  cur={id,name:d.name,type:d.type,pages:viewPages.slice(),stamps:viewStamps,
     attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,submittedAt:d.submittedAt||null,
     composeSource:d.composeSource||null,mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null};
   curPage=0;selectedStamp=null;openEditor();
