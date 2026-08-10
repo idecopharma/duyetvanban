@@ -373,6 +373,9 @@
         <div id="edAttList"></div>
       </div>
 
+      <div id="edContentAction" class="hint" style="margin-top:14px"></div>
+      <input type="file" id="replaceDocInp" accept="application/pdf,image/*,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none">
+
       <div class="row" style="margin-top:14px">
         <div style="flex:1;min-width:200px">
           <label>Tên tài liệu</label>
@@ -825,8 +828,14 @@ function renderList(){
               : `<button class="btn ghost sm" onclick="openComposeEdit('${d.id}')">✏️ Sửa đề xuất</button>`))
       : `<button class="btn ghost sm" onclick="openDoc('${d.id}')">✏️</button>`;
     const submitAction = d.approved ? '' : (submitted
-      ? `<button class="btn sm locked" style="background:#6b7280" disabled>📨 Đã gửi BGĐ</button>`
+      ? `<button class="btn sm" style="background:#7c3f00" onclick="openDocForApproval('${d.id}')" title="Hồ sơ đã gửi BGĐ — khóa sửa nhưng vẫn duyệt bình thường">📨 Đã gửi BGĐ</button>`
       : `<button class="btn sm" style="background:#e08600" onclick="broadcastPending('${d.id}')">🔔 Xin duyệt</button>`);
+    /* QUYỀN DUYỆT BGĐ TÁCH RIÊNG HOÀN TOÀN KHỎI QUYỀN SỬA:
+       Chỉ cần hồ sơ chưa duyệt + đã có xác nhận QL thì BGĐ luôn mở được màn hình duyệt,
+       bất kể hồ sơ đã bấm Xin duyệt/submittedAt hay chưa. */
+    const bgdApproveAction = (!d.approved && d.mgr)
+      ? `<button class="btn green sm" onclick="openDocForApproval('${d.id}')" title="Mở hồ sơ để Ban Giám Đốc đóng dấu và duyệt">✅ BGĐ DUYỆT</button>`
+      : '';
     return `
     <div class="doc-item">
       <div class="thumb">${d.type==='pdf'?'📕':(d.type==='excel'?'📊':(d.type==='file'?'📎':'🖼️'))}</div>
@@ -836,10 +845,11 @@ function renderList(){
         ${d.mgr?`<span class="badge mgr">✍️ Đã xác nhận</span>`:''}
         <span class="muted"> · ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</span>
         ${mgrLineHTML(d)}
-        ${submitted&&!d.approved?`<div class="mgrline ok" style="color:#7c3f00">🔒 Đã trình Ban Giám Đốc lúc ${fmtDate(d.submittedAt)} — nội dung đã khóa, sai sót phải lập đề xuất mới.</div>`:''}
+        ${submitted&&!d.approved?`<div class="mgrline ok" style="color:#7c3f00">📨 Đã trình Ban Giám Đốc lúc ${fmtDate(d.submittedAt)} — <b>chỉ khóa chỉnh sửa</b>; Ban Giám Đốc vẫn duyệt bình thường bằng nút <b>BGĐ DUYỆT</b>.</div>`:''}
       </div>
       <div class="row" style="gap:6px">
         ${d.approved||submitted?'':`<button class="btn sm" style="background:${d.mgr?'#5b7fa6':'#12468f'}" onclick="openMgrModal('${d.id}')">✍️ ${d.mgr?'Sửa xác nhận':'Xác nhận QL'}</button>`}
+        ${bgdApproveAction}
         ${submitAction}
         <button class="btn green sm" onclick="downloadDoc('${d.id}')">⬇ Tải</button>
         ${editAction}
@@ -1038,12 +1048,10 @@ function openEditor(){
   const isFile=cur.type==='file';
   document.getElementById('stampArea').style.display=isFile?'none':'block';
   document.getElementById('fileOnlyBox').style.display=isFile?'block':'none';
-  renderEdAttList();renderEdMgrBar();
+  renderEdAttList();renderEdMgrBar();renderEditContentAction();
   const dState=cur.id?(docs[cur.id]||{}):{};
   const draftBtn=document.getElementById('btnSaveDraft');
   if(draftBtn)draftBtn.style.display=(dState.approved||dState.submittedAt)?'none':'inline-flex';
-  const nameInp=document.getElementById('saveName');
-  if(nameInp){nameInp.readOnly=!!(dState.approved||dState.submittedAt);nameInp.title=nameInp.readOnly?'Văn bản đã gửi BGĐ/đã duyệt — tên tài liệu đã khóa':'';}
   if(isFile){
     document.getElementById('fileOnlyInfo').innerHTML=
       `<div class="ico">📎</div><div style="font-weight:700">${esc(cur.name)}.${esc(cur.fileExt||'')}</div>
@@ -1053,6 +1061,84 @@ function openEditor(){
     renderSealLib();window.scrollTo(0,0);renderPage();
   }
 }
+/* ===== CHỈNH SỬA NỘI DUNG / THAY BẢN VĂN BẢN =====
+   - Văn bản tạo từ "Soạn đề xuất": mở lại đúng trình soạn Word để sửa chữ.
+   - PDF/ảnh/Excel tải từ ngoài: nội dung đã là ảnh/trang render nên không giả vờ cho gõ sửa trên ảnh;
+     cho phép thay bằng bản đã sửa, giữ nguyên hồ sơ và quay lại trạng thái chờ xác nhận.
+*/
+function renderEditContentAction(){
+  const box=document.getElementById('edContentAction');
+  if(!box||!cur){return;}
+  const d=cur.id?(docs[cur.id]||{}):{};
+  if(!cur.id){
+    box.innerHTML='<b>ℹ️ Tài liệu mới chưa lưu.</b> Hãy bấm <b>Lưu (chờ duyệt)</b> trước khi cần sửa/thay bản sau này.';
+    return;
+  }
+  if(d.approved){
+    box.innerHTML='<b style="color:#137a3a">✅ Văn bản đã được Ban Giám Đốc duyệt.</b> Nội dung đã khóa. Nếu có sai sót phải lập hồ sơ mới.';
+    return;
+  }
+  if(d.submittedAt){
+    box.innerHTML='<b style="color:#9a5b00">📨 Văn bản đã gửi Ban Giám Đốc.</b> <b>Khóa này chỉ áp dụng cho CHỈNH SỬA</b>, không khóa quyền duyệt. Ban Giám Đốc vẫn có thể đóng dấu và duyệt hồ sơ ngay.'+
+      (d.mgr?'<div class="row" style="margin-top:8px"><button class="btn green sm" onclick="saveDoc(true)">✅ BGĐ DUYỆT NGAY</button></div>':'');
+    return;
+  }
+  if(d.mgr){
+    box.innerHTML='<b>🔒 Văn bản đã được cấp quản lý xác nhận.</b> Muốn sửa nội dung, phải <b>Thu hồi xác nhận</b> trước.'+
+      '<div class="row" style="margin-top:8px"><button class="btn gray sm" onclick="openMgrModal(\''+cur.id+'\')">↩ Thu hồi xác nhận để sửa</button></div>';
+    return;
+  }
+  if(d.composeSource){
+    box.innerHTML='<b>✏️ Đây là đề xuất soạn trực tiếp trên hệ thống.</b> Bấm nút dưới đây để quay lại trình soạn và sửa chữ, bảng, nội dung.'+
+      '<div class="row" style="margin-top:8px"><button class="btn sm" style="background:#e08600" onclick="openComposeEdit(\''+cur.id+'\')">✏️ SỬA NỘI DUNG VĂN BẢN</button></div>';
+  }else{
+    box.innerHTML='<b>📄 Đây là PDF/ảnh/Excel tải từ bên ngoài.</b> Trang đang thấy là bản render nên không thể gõ sửa chữ trực tiếp trên ảnh. Hãy sửa file gốc rồi bấm <b>Thay văn bản / bản sửa</b> để cập nhật cùng hồ sơ.'+
+      '<div class="row" style="margin-top:8px"><button class="btn sm" style="background:#e08600" onclick="document.getElementById(\'replaceDocInp\').click()">🔄 THAY VĂN BẢN / BẢN SỬA</button></div>';
+  }
+}
+
+const replaceDocInp=document.getElementById('replaceDocInp');
+replaceDocInp.addEventListener('change',async e=>{
+  const f=e.target.files&&e.target.files[0];
+  e.target.value='';
+  if(!f)return;
+  await replaceCurrentDocument(f);
+});
+
+async function replaceCurrentDocument(file){
+  if(!cur||!cur.id){toast('Hãy lưu hồ sơ trước');return;}
+  const id=cur.id,d=docs[id]||{};
+  if(d.approved||d.submittedAt){toast('🔒 Văn bản đã gửi BGĐ/đã duyệt — không thể thay bản');return;}
+  if(d.mgr){toast('🔒 Phải thu hồi xác nhận quản lý trước khi thay văn bản');openMgrModal(id);return;}
+  if(!confirm('Thay nội dung hồ sơ hiện tại bằng file "'+file.name+'"?\n\nSau khi thay, hồ sơ sẽ quay về trạng thái CHỜ XÁC NHẬN / CHỜ DUYỆT.'))return;
+  toast('Đang xử lý bản văn bản mới…');
+  try{
+    let type,pages;
+    if(file.type==='application/pdf'){
+      type='pdf';pages=await pdfToImages(file);
+    }else if(file.type.startsWith('image/')){
+      type='image';pages=[await imgToPngDataURL(await fileToDataURL(file),1600,false)];
+    }else if(isExcelFile(file)){
+      type='excel';toast('Đang chuyển Excel sang trang duyệt…');pages=await excelToImages(file);
+    }else{toast('Định dạng không hỗ trợ. Hãy dùng PDF, ảnh hoặc Excel.');return;}
+    const name=(document.getElementById('saveName').value.trim()||d.name||file.name.replace(/\.[^.]+$/,''));
+    const payload={
+      name,type,pages,rawPages:pages,stamps:{},
+      attachments:d.attachments||[],composeSource:null,
+      mgr:null,mgrRawBackup:null,approved:false,approvedAt:null,submittedAt:null,
+      updated:Date.now(),
+      replacedAt:Date.now(),replacedFrom:file.name
+    };
+    await db.ref('documents/'+id).set(payload);
+    cur={id,name,type,pages:pages.slice(),stamps:{},attachments:payload.attachments,approved:false,approvedAt:null,submittedAt:null,composeSource:null,mgr:null,mgrRawBackup:null};
+    curPage=0;selectedStamp=null;
+    document.getElementById('edName').textContent=name;
+    document.getElementById('saveName').value=name;
+    openEditor();
+    toast('✅ Đã thay bản văn bản — hồ sơ quay lại chờ xác nhận/chờ duyệt');
+  }catch(err){console.error(err);toast('Lỗi khi thay văn bản: '+(err.message||err));}
+}
+
 /* Thanh trạng thái xác nhận cấp quản lý + khoá nút "Đóng dấu & Duyệt" */
 function renderEdMgrBar(){
   const bar=document.getElementById('edMgrBar');
@@ -1067,10 +1153,15 @@ function renderEdMgrBar(){
   }else if(mgr){
     cur.mgr=mgr;
     bar.className='mgr-bar';
-    bar.innerHTML=`<b style="color:#12468f">✍️ Đã có xác nhận của cấp quản lý</b>
+    const submitted=!!d.submittedAt;
+    bar.innerHTML=`<b style="color:#12468f">✍️ Đã có xác nhận của cấp quản lý — HỒ SƠ ĐỦ ĐIỀU KIỆN BGĐ DUYỆT</b>
       <div style="margin-top:4px"><b>${esc(mgr.name)}</b>${mgr.role?' — '+esc(mgr.role):''}
       <span class="muted">· ${fmtDate(mgr.at)}</span>${mgr.note?` <span class="muted">· “${esc(mgr.note)}”</span>`:''}</div>
-      <div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="openMgrModal('${cur.id}')">Sửa / thu hồi xác nhận</button></div>`;
+      <div class="muted" style="margin-top:5px">${submitted?'📨 Hồ sơ đã gửi BGĐ: phần sửa bị khóa, nhưng quyền duyệt vẫn mở.':'BGĐ có thể duyệt ngay. Chỉ khi nhân viên muốn sửa thì mới cần thu hồi xác nhận.'}</div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn green sm" onclick="saveDoc(true)">✅ BGĐ DUYỆT NGAY</button>
+        ${submitted?'':`<button class="btn ghost sm" onclick="openMgrModal('${cur.id}')">✏️ Sửa / thu hồi xác nhận</button>`}
+      </div>`;
   }else{
     bar.className='mgr-bar warn';
     bar.innerHTML=`<b style="color:#b4690e">🔒 Chưa thể duyệt — thiếu xác nhận của cấp quản lý</b>
@@ -1432,7 +1523,8 @@ async function mgrRevoke(){
     if(cur&&cur.id===id){cur.mgr=null;
       if(upd.rawPages){cur.pages=upd.rawPages.slice();cur.mgrRawBackup=null;
         if(document.getElementById('editor').style.display==='block'&&cur.type!=='file')renderPage();}}
-    toast('↩ Đã thu hồi xác nhận');
+    if(cur&&cur.id===id)renderEditContentAction();
+    toast('↩ Đã thu hồi xác nhận — bây giờ có thể sửa nội dung');
   }catch(err){toast('Lỗi: '+err.message);}
 }
 
@@ -1446,6 +1538,8 @@ async function saveDoc(approve){
   if(!approve && (dState.approved||dState.submittedAt)){toast('🔒 Văn bản đã gửi BGĐ/đã duyệt — không thể lưu chỉnh sửa');return;}
   if(approve && dState.approved){toast('Hồ sơ này đã được duyệt');return;}
   if(approve){
+    /* DUYỆT BGĐ LÀ QUYỀN RIÊNG: submittedAt chỉ khóa SỬA, tuyệt đối không khóa DUYỆT.
+       Điều kiện duy nhất trước bước mật khẩu là phải có xác nhận cấp quản lý. */
     /* KHOÁ QUY TRÌNH: không có xác nhận của cấp quản lý → không cho duyệt */
     const dNow=cur.id?(docs[cur.id]||{}):{};
     const mgr=dNow.mgr||cur.mgr||null;
@@ -1531,12 +1625,28 @@ function openDoc(id){
     composeSource:d.composeSource||null,mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null};
   curPage=0;selectedStamp=null;openEditor();
 }
-function delDoc(id){
+/* Mở riêng luồng DUYỆT BGĐ — không liên quan đến khóa chỉnh sửa. */
+function openDocForApproval(id){
   const d=docs[id];if(!d)return;
-  if(d.approved||d.submittedAt){toast('🔒 Văn bản đã gửi BGĐ/đã duyệt — không được xoá khỏi hồ sơ');return;}
-  if(!confirm('Xoá tài liệu này?'))return;
-  db.ref('documents/'+id).remove().then(()=>toast('Đã xoá'));
+  if(d.approved){toast('✅ Hồ sơ này đã được Ban Giám Đốc duyệt');openDoc(id);return;}
+  if(!d.mgr){toast('🔒 Hồ sơ chưa có xác nhận quản lý — chưa đủ điều kiện BGĐ duyệt');openMgrModal(id);return;}
+  openDoc(id);
+  setTimeout(()=>{
+    renderEdMgrBar();
+    const btn=document.getElementById('btnApprove');
+    if(btn){
+      btn.classList.remove('locked');
+      btn.disabled=false;
+      btn.textContent='✅ BGĐ ĐÓNG DẤU & DUYỆT';
+      btn.title='Duyệt độc lập với chức năng sửa văn bản';
+      btn.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    toast('✅ Hồ sơ đủ điều kiện — BGĐ có thể duyệt ngay. Khóa sửa không ảnh hưởng nút duyệt.');
+  },120);
 }
+
+function delDoc(id){if(!confirm('Xoá tài liệu này?'))return;
+  db.ref('documents/'+id).remove().then(()=>toast('Đã xoá'));}
 
 /* ===== DOWNLOAD ===== */
 async function downloadCurrent(){
