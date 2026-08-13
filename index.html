@@ -793,18 +793,30 @@ const MAX_ATT_MB = 8;   // giới hạn dung lượng mỗi tệp đính kèm
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
 
-/* ===== INIT — no login, everyone sees the list ===== */
-db.ref('documents').on('value',snap=>{docs=snap.val()||{};renderList();});
+/* ===== INIT — no login, everyone sees the list =====
+   GHI CHÚ TỐI ƯU: gộp các listener .on('value') trùng lặp trên cùng 1 path
+   ('documents' từng đăng ký 2 lần, 'signatures' từng đăng ký 3 lần) thành
+   MỖI PATH CHỈ 1 LISTENER DUY NHẤT. Trước đây mỗi lần dữ liệu đổi, Firebase
+   SDK phải gửi + trình duyệt phải parse lại cùng 1 payload (vốn đã nặng vì
+   chứa ảnh base64 các trang tài liệu) nhiều lần liên tiếp — gây chậm/giật
+   khi tải. Hành vi từng callback được giữ nguyên 100%, chỉ gộp nơi đăng ký. */
+db.ref('documents').on('value',snap=>{
+  docs=snap.val()||{};
+  renderList();
+  if(document.getElementById('editor').style.display==='block')setTimeout(renderEdMgrBar,0);
+});
 // Signatures stored on Firebase → available on every machine, no re-upload
 db.ref('signatures').on('value',snap=>{
   const v=snap.val()||{};
   seals=Object.entries(v).map(([id,s])=>({id,src:s.src,name:s.name||'',updated:s.updated||0}))
     .sort((a,b)=>(b.updated||0)-(a.updated||0));
   if(document.getElementById('editor').style.display==='block')renderSealLib();
-});
-
-db.ref('documents').on('value',()=>{
-  if(document.getElementById('editor').style.display==='block')setTimeout(renderEdMgrBar,0);
+  // 2 dòng dưới thay cho 2 listener 'signatures' từng đăng ký riêng lẻ ở
+  // khu vực "Soạn đề xuất" và "Thông báo bán hàng" (nay đã bỏ, xem ghi chú
+  // tại 2 vị trí đó) — cmpFillSigPick/ntcFillSigPick được hoisted nên gọi
+  // được tại đây dù định nghĩa hàm nằm phía sau trong file.
+  setTimeout(cmpFillSigPick,0);
+  setTimeout(ntcFillSigPick,0);
 });
 
 function setFilter(f){curFilter=f;
@@ -1877,7 +1889,7 @@ document.getElementById('cmpOkSigPick').addEventListener('change',e=>{
     e.target.value?'<img src="'+e.target.value+'">':'';
 });
 // tự làm mới dropdown khi kho chữ ký trên Firebase thay đổi
-db.ref('signatures').on('value',()=>{ setTimeout(cmpFillSigPick,0); });
+// (ĐÃ GỘP vào listener 'signatures' duy nhất ở đầu file — không đăng ký lại tại đây để tránh xử lý trùng)
 // tải chữ ký PNG mới ngay tại form xác nhận (lưu vào kho chung như bản gốc)
 const cmpSigInp=document.getElementById('cmpSigInp');
 cmpSigInp.addEventListener('change',async e=>{
@@ -2074,7 +2086,7 @@ let ntcAttachments=[];
 let curNoticeId=null; // null = đang soạn thông báo MỚI; có giá trị = đang SỬA thông báo đã lưu
 
 db.ref('notices').on('value',snap=>{notices=snap.val()||{};renderNoticeList();});
-db.ref('signatures').on('value',()=>{ setTimeout(ntcFillSigPick,0); });
+// (Listener 'signatures' riêng đã GỘP vào listener duy nhất ở đầu file — không đăng ký lại tại đây)
 
 function openNotice(){
   document.getElementById('home').style.display='none';
