@@ -144,6 +144,12 @@
   .mgr-bar{border:1px dashed #c7dbff;background:#f5f9ff;border-radius:12px;padding:12px;margin-bottom:12px}
   .mgr-bar.warn{border-color:#f0c98a;background:#fffaf0}
   .btn.locked{opacity:.45;filter:grayscale(.6)}
+  /* Nút giám sát Kế toán: bình thường = tắt, đỏ = đã xác nhận */
+  .btn.acc-toggle{background:#fff;color:#374151;border:1px solid #d1d5db;box-shadow:none}
+  .btn.acc-toggle:hover{background:#f9fafb}
+  .btn.acc-toggle.on{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 2px 8px rgba(26,157,75,.20)}
+  .btn.acc-toggle.on:hover{background:var(--green-d);border-color:var(--green-d)}
+  .badge.acc{background:#eaf8ef;color:#137a3a}
   .tabs{display:flex;gap:8px;margin-bottom:14px}
   .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-weight:600;cursor:pointer;
     background:#fff;border:1px solid var(--line);font-size:14px}
@@ -270,6 +276,100 @@
   #cmpSign .sigimg{height:80px;display:flex;align-items:center;justify-content:center;margin:6px 0 2px}
   #cmpSign .sigimg img{max-height:80px;max-width:200px}
   #cmpSign .signame{font-weight:bold;min-height:22px}
+
+
+  /* ===== GIAO DIỆN DANH SÁCH DUYỆT — V2 ===== */
+  #home .card:last-child{padding:18px 18px 20px}
+  .tabs{gap:10px;margin-bottom:16px;padding:4px;background:#f3f5f7;border-radius:14px}
+  .tab{border-color:transparent;background:transparent;border-radius:11px;padding:12px 14px;transition:.18s ease}
+  .tab:hover{background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.08)}
+  .tab.active{box-shadow:0 4px 12px rgba(238,58,35,.18)}
+
+  .doc-item{
+    display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:14px;
+    padding:15px 16px;margin-bottom:12px;border:1px solid #e5e9ef;border-left:4px solid #cbd5e1;
+    border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.045);transition:.18s ease
+  }
+  .doc-item:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(15,23,42,.08);border-color:#d8dee7}
+  .doc-item.is-pending{border-left-color:#f59e0b}
+  .doc-item.is-submitted{border-left-color:#9a5b00;background:linear-gradient(90deg,#fffaf3 0,#fff 18%)}
+  .doc-item.is-approved{border-left-color:var(--green);background:linear-gradient(90deg,#f6fff8 0,#fff 18%)}
+  .doc-item .thumb{width:52px;height:52px;border-radius:12px;background:#f3f5f7;border:1px solid #e7ebf0;font-size:24px}
+  .doc-item .info{min-width:0}
+  .doc-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+  .doc-title{font-size:15.5px;line-height:1.25;color:#111827;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+  .doc-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .doc-meta{font-size:12.5px;color:#7b8492;margin-top:3px}
+  .badge{font-size:11px;padding:4px 9px;border-radius:999px;line-height:1.2;border:1px solid transparent}
+  .badge.wait{background:#fff7df;color:#8a6200;border-color:#ffe8a3}
+  .badge.ok{background:#eaf8ef;color:#137a3a;border-color:#cdebd8}
+  .badge.mgr{background:#edf4ff;color:#12468f;border-color:#d4e3ff}
+  .badge.acc{background:#eaf8ef;color:#137a3a;border-color:#cdebd8}
+  .mgrline{margin-top:7px;font-size:12.5px}
+  .mgr-chip{padding:3px 8px;border-radius:999px}
+
+  .doc-actions{
+    display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;
+    max-width:700px;padding:7px;border:1px solid #edf0f3;background:#fafbfc;border-radius:12px
+  }
+  .doc-actions .btn{min-height:38px;white-space:nowrap;border-radius:9px;padding:9px 12px;font-size:13px;box-shadow:none}
+  .doc-actions .btn:hover{filter:brightness(.98);box-shadow:0 2px 6px rgba(15,23,42,.08)}
+  .doc-actions .btn.ghost{background:#fff}
+  .doc-actions .btn.gray{background:#475569}
+  .btn.acc-toggle{background:#fff;color:#374151;border:1px solid #d7dce3;box-shadow:none}
+  .btn.acc-toggle:hover{background:#eefaf1;border-color:#b8dfc4;color:#137a3a}
+  .btn.acc-toggle.on{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 3px 9px rgba(26,157,75,.20)}
+  .btn.acc-toggle.on:hover{background:var(--green-d);border-color:var(--green-d);color:#fff}
+  .btn.acc-toggle:disabled{cursor:not-allowed;opacity:.62;filter:none}
+  .btn.acc-toggle.on:disabled{opacity:.92;background:var(--green);color:#fff;border-color:var(--green)}
+
+  /* Dấu KT hiển thị trên trang văn bản khi Kế toán xác nhận */
+  .kt-doc-mark{
+    position:absolute;z-index:11;display:flex;align-items:center;justify-content:center;
+    font-family:Arial,"Segoe UI",sans-serif;font-weight:900;line-height:1;color:#137a3a;
+    background:rgba(255,255,255,.97);border:2px solid #1a9d4b;border-radius:7px;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);pointer-events:auto;user-select:none;cursor:grab;touch-action:none
+  }
+  .kt-doc-mark:active{cursor:grabbing}
+  .kt-doc-mark.selected{outline:2px dashed #1a9d4b;outline-offset:2px}
+
+  /* ===== QUY ĐỊNH DUYỆT ===== */
+  .rules-modal{max-width:980px;width:min(980px,96vw);max-height:90vh;overflow:auto}
+  .rules-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .rules-view{background:#fff;border:1px solid #e3e6ea;border-radius:14px;padding:24px;min-height:260px;line-height:1.65;color:#1f2937;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+  .rules-view h1,.rules-view h2,.rules-view h3{margin-top:0.7em}
+  .rules-empty{color:#6b7280;text-align:center;padding:48px 20px}
+  .rules-editor-wrap{background:#eef1f4;border-radius:14px;padding:12px}
+  #rulesEditor{background:#fff;min-height:520px;padding:42px 52px;border-radius:8px;outline:none;line-height:1.6;font-size:14pt;font-family:"Times New Roman",Times,serif;box-shadow:0 3px 16px rgba(15,23,42,.12)}
+  #rulesEditor:focus{box-shadow:0 0 0 2px rgba(26,157,75,.25),0 3px 16px rgba(15,23,42,.12)}
+  #rulesEditor:empty:before{content:"Nhập quy định ký duyệt tại đây…";color:#9ca3af;font-style:italic}
+  .rules-toolbar{display:flex;flex-wrap:wrap;gap:5px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px;margin-bottom:10px;position:sticky;top:0;z-index:5;box-shadow:var(--shadow)}
+  .rules-toolbar select{width:auto;padding:7px 8px;font-size:13px}
+  .rules-toolbar input[type=color]{width:42px;height:36px;padding:2px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+  .rules-tb{width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#1f2937;font-size:15px}
+  .rules-tb:hover{background:#eefaf1;border-color:#a9d9b8}
+  .rules-sep{width:1px;height:26px;background:var(--line);margin:0 3px}
+  .btn.bgd-red{background:var(--red);color:#fff;border-color:var(--red)}
+  .btn.bgd-red:hover{background:var(--red-d);border-color:var(--red-d)}
+
+  @media (max-width:980px){
+    .doc-item{grid-template-columns:52px minmax(0,1fr);align-items:start}
+    .doc-actions{grid-column:1/-1;width:100%;max-width:none;justify-content:flex-start}
+  }
+  @media (max-width:640px){
+    .wrap{padding:10px}
+    #home .card:last-child{padding:12px}
+    .tabs{overflow-x:auto;display:flex;gap:6px;padding:4px}
+    .tab{min-width:135px;flex:0 0 auto;padding:10px 12px}
+    .doc-item{grid-template-columns:44px minmax(0,1fr);gap:10px;padding:12px 10px;border-radius:12px}
+    .doc-item .thumb{width:42px;height:42px;border-radius:10px;font-size:21px}
+    .doc-title{font-size:14.5px}
+    .doc-actions{padding:6px;gap:6px}
+    .doc-actions .btn{flex:1 1 auto;justify-content:center;min-width:110px;padding:9px 10px}
+    #rulesEditor{min-height:420px;padding:24px 18px;font-size:13pt}
+    .rules-modal{width:98vw;padding:14px}
+  }
+
 </style>
 </head>
 <body>
@@ -280,6 +380,7 @@
   <button class="btn ghost sm hdr-compose" onclick="location.href='https://erp-ideco.skyit.vn/#/app/dashboard/main'" title="Quay lại ERP">🏠 HOME ERP</button>
   <button class="btn ghost sm hdr-compose" onclick="openCompose()">✍️ Soạn đề xuất</button>
   <button class="btn ghost sm hdr-compose" onclick="openNotice()">📣 BGĐ Thông báo</button>
+  <button class="btn ghost sm hdr-compose" onclick="openRulesView()">📘 Quy Định Duyệt</button>
   <button class="btn ghost sm" onclick="broadcastLive()"
     style="color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)">
     📢 Thông báo Live
@@ -330,7 +431,7 @@
         <div class="size-ctrl">
           <span class="muted">Cỡ dấu</span>
           <button onclick="nudgeStampSize(-5)">−</button>
-          <input type="range" id="stampSizeSlider" min="6" max="90" value="26" step="1" oninput="setStampSize(this.value)">
+          <input type="range" id="stampSizeSlider" min="3" max="90" value="26" step="1" oninput="setStampSize(this.value)">
           <button onclick="nudgeStampSize(5)">+</button>
           <span class="muted" id="stampSizeVal" style="min-width:38px;text-align:right">26%</span>
         </div>
@@ -384,7 +485,7 @@
       </div>
       <div class="row" style="margin-top:12px">
         <button class="btn" id="btnSaveDraft" onclick="saveDoc(false)">💾 Lưu (chờ duyệt)</button>
-        <button class="btn green" id="btnApprove" onclick="saveDoc(true)">✅ Đóng dấu & Duyệt</button>
+        <button class="btn bgd-red" id="btnApprove" onclick="saveDoc(true)">✅ Đóng dấu & Duyệt</button>
         <button class="btn gray" onclick="downloadCurrent()">⬇ Tải xuống</button>
       </div>
     </div>
@@ -691,7 +792,7 @@
         <div class="row">
           <button class="btn ghost" onclick="closeNoticeCompose()">← Huỷ</button>
           <button class="btn" style="background:#e08600" onclick="noticeSave(false)">💾 Lưu (chờ duyệt)</button>
-          <button class="btn green" onclick="noticeSave(true)">✅ Đóng dấu & Duyệt & Công bố</button>
+          <button class="btn bgd-red" onclick="noticeSave(true)">✅ Đóng dấu & Duyệt & Công bố</button>
           <button class="btn ghost" onclick="noticePdf()">⬇ Tải PDF bản nháp</button>
         </div>
       </div>
@@ -746,7 +847,97 @@
     <div id="apprErr" class="muted" style="color:var(--red);height:16px;margin-top:8px"></div>
     <div class="row" style="justify-content:flex-end;margin-top:8px">
       <button class="btn ghost sm" onclick="closeModal('apprModal')">Huỷ</button>
-      <button class="btn green sm" onclick="confirmApprove()">✅ Xác nhận duyệt</button>
+      <button class="btn bgd-red sm" onclick="confirmApprove()">✅ Xác nhận duyệt</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUY ĐỊNH DUYỆT — XEM -->
+<div class="modal-bg" id="rulesViewModal">
+  <div class="modal rules-modal">
+    <div class="rules-head">
+      <div>
+        <h2 style="margin:0">📘 QUY ĐỊNH DUYỆT</h2>
+        <div class="muted" id="rulesUpdated" style="margin-top:4px"></div>
+      </div>
+      <div class="row" style="gap:7px">
+        <button class="btn ghost sm" onclick="openRulesPassword()">⚙️ Cài đặt / Soạn quy định</button>
+        <button class="btn gray sm" onclick="closeModal('rulesViewModal')">✕ Đóng</button>
+      </div>
+    </div>
+    <div id="rulesViewContent" class="rules-view"><div class="rules-empty">Chưa có quy định duyệt được lưu.</div></div>
+  </div>
+</div>
+
+<!-- QUY ĐỊNH DUYỆT — MẬT KHẨU CÀI ĐẶT -->
+<div class="modal-bg" id="rulesPwdModal">
+  <div class="modal">
+    <h3 style="margin-top:0">🔐 Cài đặt Quy Định Duyệt</h3>
+    <p class="muted">Nhập mật khẩu quản trị để soạn hoặc sửa quy định ký duyệt.</p>
+    <input type="password" id="rulesPwd" placeholder="Mật khẩu cài đặt" onkeydown="if(event.key==='Enter')confirmRulesPassword()">
+    <div id="rulesPwdErr" class="muted" style="color:var(--red);min-height:18px;margin-top:8px"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:8px">
+      <button class="btn ghost sm" onclick="closeModal('rulesPwdModal')">Huỷ</button>
+      <button class="btn green sm" onclick="confirmRulesPassword()">✅ Mở trình soạn</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUY ĐỊNH DUYỆT — TRÌNH SOẠN KIỂU WORD -->
+<div class="modal-bg" id="rulesEditModal">
+  <div class="modal rules-modal">
+    <div class="rules-head">
+      <div>
+        <h2 style="margin:0">⚙️ Soạn Quy Định Duyệt</h2>
+        <div class="muted" style="margin-top:4px">Soạn nội dung như Microsoft Word. Quét chọn văn bản rồi dùng Font, Size, B/I/U, màu chữ, canh lề…</div>
+      </div>
+      <button class="btn gray sm" onclick="closeModal('rulesEditModal')">✕ Đóng</button>
+    </div>
+
+    <div class="rules-toolbar" id="rulesToolbar">
+      <select id="rulesFont" title="Font chữ">
+        <option value="Times New Roman" selected>Times New Roman</option>
+        <option value="Arial">Arial</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Calibri">Calibri</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Courier New">Courier New</option>
+      </select>
+      <select id="rulesSize" title="Cỡ chữ">
+        <option value="1">10</option><option value="2">12</option>
+        <option value="3" selected>14</option><option value="4">16</option>
+        <option value="5">20</option><option value="6">26</option><option value="7">36</option>
+      </select>
+      <input type="color" id="rulesColor" value="#111111" title="Màu chữ">
+      <span class="rules-sep"></span>
+      <button class="rules-tb" data-cmd="bold" title="Đậm"><b>B</b></button>
+      <button class="rules-tb" data-cmd="italic" title="Nghiêng"><i>I</i></button>
+      <button class="rules-tb" data-cmd="underline" title="Gạch dưới"><u>U</u></button>
+      <button class="rules-tb" data-cmd="strikeThrough" title="Gạch ngang"><s>S</s></button>
+      <span class="rules-sep"></span>
+      <button class="rules-tb" data-cmd="justifyLeft" title="Canh trái">⯇</button>
+      <button class="rules-tb" data-cmd="justifyCenter" title="Canh giữa">≡</button>
+      <button class="rules-tb" data-cmd="justifyRight" title="Canh phải">⯈</button>
+      <button class="rules-tb" data-cmd="justifyFull" title="Canh đều">▤</button>
+      <span class="rules-sep"></span>
+      <button class="rules-tb" data-cmd="insertUnorderedList" title="Danh sách chấm">•</button>
+      <button class="rules-tb" data-cmd="insertOrderedList" title="Danh sách số">1.</button>
+      <span class="rules-sep"></span>
+      <button class="rules-tb" data-cmd="undo" title="Hoàn tác">↶</button>
+      <button class="rules-tb" data-cmd="redo" title="Làm lại">↷</button>
+      <button class="rules-tb" data-cmd="removeFormat" title="Xóa định dạng">Tx</button>
+    </div>
+
+    <div class="rules-editor-wrap">
+      <div id="rulesEditor" contenteditable="true"></div>
+    </div>
+
+    <div class="row" style="justify-content:space-between;margin-top:12px">
+      <div class="muted">🔐 Mật khẩu cài đặt: chỉ người được phân quyền mới có thể mở trình soạn.</div>
+      <div class="row" style="gap:7px">
+        <button class="btn green sm" onclick="saveApprovalRules()">💾 Lưu Quy Định Duyệt</button>
+      </div>
     </div>
   </div>
 </div>
@@ -779,6 +970,7 @@ let curFilter = "all";
 let cur = null;
 let curPage = 0;
 let selectedStamp = null;
+let selectedAccMark = false;
 let seals = [];
 let baseFitScale = 1;   // tỉ lệ co vừa khung màn hình
 let zoomFactor = 1;     // hệ số phóng to thêm do người dùng chọn (100% = vừa khung)
@@ -792,6 +984,125 @@ const MAX_ATT_MB = 8;   // giới hạn dung lượng mỗi tệp đính kèm
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* ===== QUY ĐỊNH DUYỆT — lưu Firebase RTDB + dự phòng localStorage ===== */
+const APPROVAL_RULES_PATH='settings/approvalRules';
+let approvalRules={html:'',updated:0};
+let rulesSavedRange=null;
+try{
+  const localRules=JSON.parse(localStorage.getItem('ideco_approval_rules')||'null');
+  if(localRules&&typeof localRules.html==='string')approvalRules=localRules;
+}catch(_e){}
+
+db.ref(APPROVAL_RULES_PATH).on('value',snap=>{
+  const v=snap.val();
+  if(v&&typeof v.html==='string'){
+    approvalRules={html:v.html,updated:v.updated||0};
+    try{localStorage.setItem('ideco_approval_rules',JSON.stringify(approvalRules));}catch(_e){}
+  }
+  renderRulesView();
+});
+
+function sanitizeRulesHtml(html){
+  const box=document.createElement('div');box.innerHTML=html||'';
+  box.querySelectorAll('script,iframe,object,embed,link,meta').forEach(n=>n.remove());
+  box.querySelectorAll('*').forEach(n=>{
+    [...n.attributes].forEach(a=>{
+      if(/^on/i.test(a.name))n.removeAttribute(a.name);
+      if((a.name==='href'||a.name==='src')&&/^javascript:/i.test(a.value||''))n.removeAttribute(a.name);
+    });
+  });
+  return box.innerHTML;
+}
+function renderRulesView(tempHtml,tempUpdated){
+  const box=document.getElementById('rulesViewContent');
+  const up=document.getElementById('rulesUpdated');
+  if(!box||!up)return;
+  const html=tempHtml!==undefined?tempHtml:approvalRules.html;
+  const updated=tempUpdated!==undefined?tempUpdated:approvalRules.updated;
+  box.innerHTML=html?sanitizeRulesHtml(html):'<div class="rules-empty">Chưa có quy định duyệt được lưu.<br><br>Bấm <b>⚙️ Cài đặt / Soạn quy định</b> để tạo nội dung.</div>';
+  up.textContent=updated?(tempUpdated===-1?'Xem trước — nội dung chưa lưu':'Cập nhật '+fmtDate(updated)):'';
+}
+function openRulesView(){
+  renderRulesView();
+  openModal('rulesViewModal');
+}
+function openRulesPassword(){
+  closeModal('rulesViewModal');
+  const pwd=document.getElementById('rulesPwd');
+  const err=document.getElementById('rulesPwdErr');
+  if(pwd)pwd.value='';if(err)err.textContent='';
+  openModal('rulesPwdModal');
+  setTimeout(()=>pwd&&pwd.focus(),80);
+}
+function confirmRulesPassword(){
+  const pwd=document.getElementById('rulesPwd');
+  const err=document.getElementById('rulesPwdErr');
+  if(!pwd||pwd.value!==APP_PASSWORD){if(err)err.textContent='Sai mật khẩu cài đặt';return;}
+  closeModal('rulesPwdModal');
+  pwd.value='';if(err)err.textContent='';
+  const ed=document.getElementById('rulesEditor');
+  ed.innerHTML=approvalRules.html||'';
+  rulesSavedRange=null;
+  openModal('rulesEditModal');
+  setTimeout(()=>ed.focus(),80);
+}
+function rulesSaveSelection(){
+  const ed=document.getElementById('rulesEditor');
+  const sel=window.getSelection();
+  if(!ed||!sel||!sel.rangeCount)return;
+  const r=sel.getRangeAt(0);
+  if(ed.contains(r.commonAncestorContainer))rulesSavedRange=r.cloneRange();
+}
+function rulesRestoreSelection(){
+  if(!rulesSavedRange)return false;
+  const sel=window.getSelection();
+  if(!sel)return false;
+  sel.removeAllRanges();sel.addRange(rulesSavedRange);return true;
+}
+function rulesCommand(cmd,value){
+  const ed=document.getElementById('rulesEditor');
+  if(!ed)return;
+  ed.focus();
+  rulesRestoreSelection();
+  try{document.execCommand(cmd,false,value===undefined?null:value);}catch(_e){}
+  rulesSaveSelection();
+}
+async function saveApprovalRules(){
+  const ed=document.getElementById('rulesEditor');
+  if(!ed)return;
+  const html=sanitizeRulesHtml(ed.innerHTML);
+  const data={html,updated:Date.now()};
+  approvalRules=data;
+  try{localStorage.setItem('ideco_approval_rules',JSON.stringify(data));}catch(_e){}
+  try{
+    await db.ref(APPROVAL_RULES_PATH).set(data);
+    toast('✅ Đã lưu Quy Định Duyệt lên hệ thống');
+  }catch(err){
+    console.error(err);
+    toast('⚠️ Đã lưu trên máy này; Firebase lỗi: '+(err.message||err));
+  }
+  closeModal('rulesEditModal');
+  renderRulesView();
+  openModal('rulesViewModal');
+}
+
+/* Gắn toolbar Word cho Quy Định Duyệt */
+setTimeout(()=>{
+  const ed=document.getElementById('rulesEditor');
+  if(!ed)return;
+  ['mouseup','keyup','input','focus'].forEach(ev=>ed.addEventListener(ev,rulesSaveSelection));
+  document.querySelectorAll('#rulesToolbar .rules-tb').forEach(b=>{
+    b.addEventListener('mousedown',e=>e.preventDefault());
+    b.addEventListener('click',()=>rulesCommand(b.dataset.cmd));
+  });
+  const font=document.getElementById('rulesFont');
+  const size=document.getElementById('rulesSize');
+  const color=document.getElementById('rulesColor');
+  if(font)font.addEventListener('change',e=>rulesCommand('fontName',e.target.value));
+  if(size)size.addEventListener('change',e=>rulesCommand('fontSize',e.target.value));
+  if(color)color.addEventListener('input',e=>rulesCommand('foreColor',e.target.value));
+},0);
 
 /* ===== INIT — no login, everyone sees the list =====
    GHI CHÚ TỐI ƯU: gộp các listener .on('value') trùng lặp trên cùng 1 path
@@ -832,40 +1143,56 @@ function renderList(){
   el.innerHTML=arr.map(d=>{
     const isCompose=!!d.composeSource;
     const submitted=!!d.submittedAt;
+    const stateClass=d.approved?'is-approved':(submitted?'is-submitted':'is-pending');
     const editAction = isCompose
       ? (d.approved||submitted
           ? `<button class="btn ghost sm" onclick="openDoc('${d.id}')" title="Văn bản đã gửi BGĐ/đã duyệt — chỉ xem">👁️ Xem</button>`
           : (d.mgr
               ? `<button class="btn ghost sm" onclick="requestComposeEdit('${d.id}')" title="Phải thu hồi xác nhận trước khi sửa">🔒 Muốn sửa</button>`
               : `<button class="btn ghost sm" onclick="openComposeEdit('${d.id}')">✏️ Sửa đề xuất</button>`))
-      : `<button class="btn ghost sm" onclick="openDoc('${d.id}')">✏️</button>`;
+      : `<button class="btn ghost sm" onclick="openDoc('${d.id}')">✏️ Sửa / Xem</button>`;
     const submitAction = d.approved ? '' : (submitted
       ? `<button class="btn sm" style="background:#7c3f00" onclick="openDocForApproval('${d.id}')" title="Hồ sơ đã gửi BGĐ — khóa sửa nhưng vẫn duyệt bình thường">📨 Đã gửi BGĐ</button>`
       : `<button class="btn sm" style="background:#e08600" onclick="broadcastPending('${d.id}')">🔔 Xin duyệt</button>`);
-    /* QUYỀN DUYỆT BGĐ TÁCH RIÊNG HOÀN TOÀN KHỎI QUYỀN SỬA:
-       Chỉ cần hồ sơ chưa duyệt + đã có xác nhận QL thì BGĐ luôn mở được màn hình duyệt,
-       bất kể hồ sơ đã bấm Xin duyệt/submittedAt hay chưa. */
     const bgdApproveAction = (!d.approved && d.mgr)
-      ? `<button class="btn green sm" onclick="openDocForApproval('${d.id}')" title="Mở hồ sơ để Ban Giám Đốc đóng dấu và duyệt">✅ BGĐ DUYỆT</button>`
+      ? `<button class="btn bgd-red sm" onclick="openDocForApproval('${d.id}')" title="Mở hồ sơ để Ban Giám Đốc đóng dấu và duyệt">✅ BGĐ DUYỆT</button>`
       : '';
+
+    /* Luôn hiện nút Kế toán để giao diện nhất quán.
+       - Hồ sơ chưa duyệt: bật/tắt được.
+       - Hồ sơ đã duyệt: hiển thị trạng thái nhưng khóa để bảo toàn lịch sử. */
+    const accOn=!!d.accountingConfirmed;
+    const accountingAction = `<button class="btn sm acc-toggle ${accOn?'on':''}" aria-pressed="${accOn?'true':'false'}"
+      ${d.approved?'disabled':''}
+      onclick="toggleAccountingConfirm('${d.id}')"
+      title="${d.approved?(accOn?'Hồ sơ đã duyệt — Kế toán đã xác nhận, trạng thái được khóa':'Hồ sơ đã duyệt — chưa có xác nhận Kế toán, trạng thái được khóa'):(accOn?'Đã có xác nhận giám sát của Kế toán — bấm để tắt':'Bấm khi Kế toán đã kiểm tra/giám sát đề xuất tài chính')}">
+      ${accOn?'✅':'💰'} ${accOn?'Kế toán-xác nhận':'Kế toán xác nhận'}
+    </button>`;
+
     return `
-    <div class="doc-item">
+    <div class="doc-item ${stateClass}">
       <div class="thumb">${d.type==='pdf'?'📕':(d.type==='excel'?'📊':(d.type==='file'?'📎':'🖼️'))}</div>
       <div class="info">
-        <b>${esc(d.name)}</b>
-        <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':(submitted?'📨 Đã gửi BGĐ':'⏳ Chờ duyệt')}</span>
-        ${d.mgr?`<span class="badge mgr">✍️ Đã xác nhận</span>`:''}
-        <span class="muted"> · ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</span>
+        <div class="doc-title-row">
+          <b class="doc-title">${esc(d.name)}</b>
+          <div class="doc-badges">
+            <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':(submitted?'📨 Đã gửi BGĐ':'⏳ Chờ duyệt')}</span>
+            ${d.mgr?`<span class="badge mgr">✍️ QL đã xác nhận</span>`:''}
+            ${accOn?`<span class="badge acc">Kế toán · Đã xác nhận</span>`:''}
+          </div>
+        </div>
+        <div class="doc-meta">Cập nhật ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</div>
         ${mgrLineHTML(d)}
-        ${submitted&&!d.approved?`<div class="mgrline ok" style="color:#7c3f00">📨 Đã trình Ban Giám Đốc lúc ${fmtDate(d.submittedAt)} — <b>chỉ khóa chỉnh sửa</b>; Ban Giám Đốc vẫn duyệt bình thường bằng nút <b>BGĐ DUYỆT</b>.</div>`:''}
+        ${submitted&&!d.approved?`<div class="mgrline ok" style="color:#7c3f00">📨 Đã trình Ban Giám Đốc lúc ${fmtDate(d.submittedAt)} — <b>chỉ khóa chỉnh sửa</b>; quyền duyệt vẫn hoạt động bình thường.</div>`:''}
       </div>
-      <div class="row" style="gap:6px">
+      <div class="doc-actions">
         ${d.approved||submitted?'':`<button class="btn sm" style="background:${d.mgr?'#5b7fa6':'#12468f'}" onclick="openMgrModal('${d.id}')">✍️ ${d.mgr?'Sửa xác nhận':'Xác nhận QL'}</button>`}
+        ${accountingAction}
         ${bgdApproveAction}
         ${submitAction}
         <button class="btn green sm" onclick="downloadDoc('${d.id}')">⬇ Tải</button>
         ${editAction}
-        <button class="btn gray sm" onclick="delDoc('${d.id}')">🗑</button>
+        <button class="btn gray sm" onclick="delDoc('${d.id}')" title="Xóa hồ sơ">🗑</button>
       </div>
     </div>`;
   }).join('');
@@ -881,6 +1208,32 @@ function mgrLineHTML(d){
     </div>`;
   }
   return `<div class="mgrline no">⚠️ Chưa có xác nhận của cấp quản lý — chưa thể đóng dấu duyệt</div>`;
+}
+
+/* ===== KẾ TOÁN XÁC NHẬN GIÁM SÁT TÀI CHÍNH =====
+   - Chỉ là lớp xác nhận giám sát bổ sung, không thay thế xác nhận QL và không khóa BGĐ.
+   - Nhấn 1 lần: bật -> nút đỏ. Nhấn lại: tắt -> nút trở về bình thường.
+   - Trạng thái lưu Realtime Database để mọi máy đều thấy giống nhau. */
+async function toggleAccountingConfirm(id){
+  const d=docs[id];
+  if(!d){toast('Không tìm thấy hồ sơ');return;}
+  if(d.approved){toast('🔒 Hồ sơ đã duyệt — trạng thái Kế toán được khóa để bảo toàn lịch sử');return;}
+  const next=!d.accountingConfirmed;
+  const pageCount=((d.rawPages&&d.rawPages.length)||(d.pages&&d.pages.length)||1);
+  const nextMark=next?(d.accountingMark||defaultAccountingMark(pageCount)):null;
+  try{
+    await db.ref('documents/'+id).update({
+      accountingConfirmed:next,
+      accountingConfirmedAt:next?Date.now():null,
+      accountingBaked:false,
+      accountingMark:nextMark,
+      updated:Date.now()
+    });
+    toast(next?'✅ Kế toán đã xác nhận — mở văn bản để kéo “Kế toán-xác nhận” sang vùng trống và chỉnh cỡ':'↩ Đã tắt xác nhận Kế toán — dấu Kế toán được gỡ khỏi văn bản');
+  }catch(err){
+    console.error(err);
+    toast('Lỗi xác nhận Kế toán: '+(err.message||err));
+  }
 }
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fmtDate(t){if(!t)return'';const d=new Date(t);
@@ -1092,7 +1445,7 @@ function renderEditContentAction(){
   }
   if(d.submittedAt){
     box.innerHTML='<b style="color:#9a5b00">📨 Văn bản đã gửi Ban Giám Đốc.</b> <b>Khóa này chỉ áp dụng cho CHỈNH SỬA</b>, không khóa quyền duyệt. Ban Giám Đốc vẫn có thể đóng dấu và duyệt hồ sơ ngay.'+
-      (d.mgr?'<div class="row" style="margin-top:8px"><button class="btn green sm" onclick="saveDoc(true)">✅ BGĐ DUYỆT NGAY</button></div>':'');
+      (d.mgr?'<div class="row" style="margin-top:8px"><button class="btn bgd-red sm" onclick="saveDoc(true)">✅ BGĐ DUYỆT NGAY</button></div>':'');
     return;
   }
   if(d.mgr){
@@ -1138,12 +1491,13 @@ async function replaceCurrentDocument(file){
       name,type,pages,rawPages:pages,stamps:{},
       attachments:d.attachments||[],composeSource:null,
       mgr:null,mgrRawBackup:null,approved:false,approvedAt:null,submittedAt:null,
+      accountingConfirmed:false,accountingConfirmedAt:null,accountingBaked:false,accountingMark:null,
       updated:Date.now(),
       replacedAt:Date.now(),replacedFrom:file.name
     };
     await db.ref('documents/'+id).set(payload);
-    cur={id,name,type,pages:pages.slice(),stamps:{},attachments:payload.attachments,approved:false,approvedAt:null,submittedAt:null,composeSource:null,mgr:null,mgrRawBackup:null};
-    curPage=0;selectedStamp=null;
+    cur={id,name,type,pages:pages.slice(),stamps:{},attachments:payload.attachments,approved:false,approvedAt:null,submittedAt:null,composeSource:null,mgr:null,mgrRawBackup:null,accountingConfirmed:false,accountingConfirmedAt:null,accountingBaked:false,accountingMark:null};
+    curPage=0;selectedStamp=null;selectedAccMark=false;
     document.getElementById('edName').textContent=name;
     document.getElementById('saveName').value=name;
     openEditor();
@@ -1158,6 +1512,7 @@ function renderEdMgrBar(){
   if(!bar||!cur)return;
   const d=cur.id?(docs[cur.id]||{}):{};
   const mgr=d.mgr||cur.mgr||null;
+  const acc=!!(d.accountingConfirmed||cur.accountingConfirmed);
   if(!cur.id){
     bar.className='mgr-bar warn';
     bar.innerHTML=`<b style="color:#b4690e">⚠️ Hồ sơ chưa được lưu</b>
@@ -1169,9 +1524,9 @@ function renderEdMgrBar(){
     bar.innerHTML=`<b style="color:#12468f">✍️ Đã có xác nhận của cấp quản lý — HỒ SƠ ĐỦ ĐIỀU KIỆN BGĐ DUYỆT</b>
       <div style="margin-top:4px"><b>${esc(mgr.name)}</b>${mgr.role?' — '+esc(mgr.role):''}
       <span class="muted">· ${fmtDate(mgr.at)}</span>${mgr.note?` <span class="muted">· “${esc(mgr.note)}”</span>`:''}</div>
-      <div class="muted" style="margin-top:5px">${submitted?'📨 Hồ sơ đã gửi BGĐ: phần sửa bị khóa, nhưng quyền duyệt vẫn mở.':'BGĐ có thể duyệt ngay. Chỉ khi nhân viên muốn sửa thì mới cần thu hồi xác nhận.'}</div>
+      <div class="muted" style="margin-top:5px">${submitted?'📨 Hồ sơ đã gửi BGĐ: phần sửa bị khóa, nhưng quyền duyệt vẫn mở.':'BGĐ có thể duyệt ngay. Chỉ khi nhân viên muốn sửa thì mới cần thu hồi xác nhận.'}</div>\n      <div style="margin-top:7px;font-weight:800;color:${acc?'#137a3a':'#6b7280'}">${acc?'KẾ TOÁN · ĐÃ XÁC NHẬN GIÁM SÁT TÀI CHÍNH':'Kế toán · Chưa xác nhận giám sát tài chính'}</div>
       <div class="row" style="margin-top:8px">
-        <button class="btn green sm" onclick="saveDoc(true)">✅ BGĐ DUYỆT NGAY</button>
+        <button class="btn bgd-red sm" onclick="saveDoc(true)">✅ BGĐ DUYỆT NGAY</button>
         ${submitted?'':`<button class="btn ghost sm" onclick="openMgrModal('${cur.id}')">✏️ Sửa / thu hồi xác nhận</button>`}
       </div>`;
   }else{
@@ -1209,8 +1564,9 @@ function downloadEdAtt(i){
 function closeEditor(){
   document.getElementById('editor').style.display='none';
   document.getElementById('home').style.display='block';
-  cur=null;selectedStamp=null;
+  cur=null;selectedStamp=null;selectedAccMark=false;
 }
+
 function gotoPage(p){if(p<0||p>=cur.pages.length)return;curPage=p;renderPage();}
 function renderPage(){
   const stage=document.getElementById('stage');stage.innerHTML='';
@@ -1226,6 +1582,9 @@ function renderPage(){
     updateZoomLabel(100);
     applyStageTransform();
     renderStamps();
+    const accState=currentAccountingState();
+    if(selectedAccMark && (!accState.mark || accState.mark.page!==curPage))selectedAccMark=false;
+    renderAccountingMark();
   };
   img.src=cur.pages[curPage];stage.appendChild(img);
   const nav=document.getElementById('pgnav');
@@ -1308,6 +1667,123 @@ function renderStamps(){
   stage.querySelectorAll('.stamp').forEach(s=>s.remove());
   (cur.stamps[curPage]||[]).forEach((st,idx)=>stage.appendChild(makeStampEl(st,idx)));
 }
+
+const ACCOUNTING_LABEL='Kế toán-xác nhận';
+function defaultAccountingMark(pageCount){
+  return {page:Math.max(0,(pageCount||1)-1),xr:0.74,yr:0.90,wr:0.22};
+}
+function getAccountingMarkDims(NW,NH,mark){
+  const wr=Math.max(0.12,Math.min(0.45,Number((mark&&mark.wr)||0.22)));
+  const w=Math.round(NW*wr);
+  const fs=Math.max(18,Math.round(w*0.105));
+  const padY=Math.max(5,Math.round(fs*0.28));
+  const h=fs+padY*2;
+  return {w,h,fs,padY,rad:Math.max(6,Math.round(fs*.20))};
+}
+function normalizeAccountingMark(mark,NW,NH){
+  const base=Object.assign({},defaultAccountingMark((cur&&cur.pages&&cur.pages.length)||1),mark||{});
+  base.wr=Math.max(0.12,Math.min(0.45,Number(base.wr)||0.22));
+  const dim=getAccountingMarkDims(NW,NH,base);
+  const maxX=Math.max(0.008,1-(dim.w/NW)-0.008);
+  const maxY=Math.max(0.008,1-(dim.h/NH)-0.008);
+  base.xr=Math.max(0.008,Math.min(maxX,Number.isFinite(Number(base.xr))?Number(base.xr):0.74));
+  base.yr=Math.max(0.008,Math.min(maxY,Number.isFinite(Number(base.yr))?Number(base.yr):0.90));
+  base.page=Math.max(0,Number.isFinite(Number(base.page))?Number(base.page):Math.max(0,((cur&&cur.pages&&cur.pages.length)||1)-1));
+  return base;
+}
+function currentAccountingState(){
+  if(!cur)return {confirmed:false,baked:false,mark:null};
+  const d=cur.id?(docs[cur.id]||{}):cur;
+  const confirmed=d.accountingConfirmed!==undefined?!!d.accountingConfirmed:!!cur.accountingConfirmed;
+  const baked=d.accountingBaked!==undefined?!!d.accountingBaked:!!cur.accountingBaked;
+  let mark=d.accountingMark||cur.accountingMark||null;
+  if(confirmed) mark=normalizeAccountingMark(mark,curNatW||1600,curNatH||2200);
+  return {confirmed,baked,mark};
+}
+function persistAccountingMark(mark){
+  if(!cur||!cur.id)return;
+  const clean=Object.assign({},mark||{});
+  cur.accountingMark=clean;
+  if(docs[cur.id]) docs[cur.id].accountingMark=clean;
+  clearTimeout(persistAccountingMark._t);
+  persistAccountingMark._t=setTimeout(()=>{
+    db.ref('documents/'+cur.id).update({accountingMark:clean,updated:Date.now()}).catch(err=>console.error(err));
+  },100);
+}
+function renderAccountingMark(){
+  const stage=document.getElementById('stage');
+  stage.querySelectorAll('.kt-doc-mark').forEach(n=>n.remove());
+  const st=currentAccountingState();
+  if(!st.confirmed || !st.mark || st.mark.page!==curPage || (cur&&cur.approved&&st.baked))return;
+  const mark=normalizeAccountingMark(st.mark,curNatW,curNatH);
+  const dim=getAccountingMarkDims(curNatW,curNatH,mark);
+  const el=document.createElement('div');
+  el.className='kt-doc-mark'+(selectedAccMark?' selected':'');
+  el.textContent=ACCOUNTING_LABEL;
+  el.style.fontSize=dim.fs+'px';
+  el.style.width=dim.w+'px';
+  el.style.height=dim.h+'px';
+  el.style.left=(mark.xr*curNatW)+'px';
+  el.style.top=(mark.yr*curNatH)+'px';
+  el.title='Kế toán đã xác nhận — bấm giữ và kéo để đổi vị trí';
+  el.addEventListener('pointerdown',e=>{
+    if(cur&&cur.approved)return;
+    e.stopPropagation();
+    selectedStamp=null;
+    selectedAccMark=true;
+    highlightSel();
+    el.classList.add('selected');
+    syncStampSizeSlider();
+    /* KHÔNG render lại element tại pointerdown: nếu xóa/recreate ở đây thì pointer capture mất
+       và người dùng sẽ không kéo được dấu Kế toán. */
+    startAccountingDrag(e,el,mark);
+  });
+  stage.appendChild(el);
+}
+function startAccountingDrag(e,el,mark){
+  e.preventDefault();
+  const scale=getStageScale();
+  const sx=e.clientX,sy=e.clientY,oxr=mark.xr,oyr=mark.yr;
+  let moved=false;
+  el.setPointerCapture(e.pointerId);
+  function move(ev){
+    moved=true;
+    const dim=getAccountingMarkDims(curNatW,curNatH,mark);
+    const maxX=Math.max(0.008,1-(dim.w/curNatW)-0.008);
+    const maxY=Math.max(0.008,1-(dim.h/curNatH)-0.008);
+    const dxNat=(ev.clientX-sx)/scale,dyNat=(ev.clientY-sy)/scale;
+    mark.xr=Math.max(0.008,Math.min(maxX,oxr+dxNat/curNatW));
+    mark.yr=Math.max(0.008,Math.min(maxY,oyr+dyNat/curNatH));
+    el.style.left=(mark.xr*curNatW)+'px';
+    el.style.top=(mark.yr*curNatH)+'px';
+  }
+  function up(){
+    try{el.releasePointerCapture(e.pointerId);}catch(_e){}
+    el.removeEventListener('pointermove',move);
+    el.removeEventListener('pointerup',up);
+    el.removeEventListener('pointercancel',up);
+    persistAccountingMark(mark);
+    if(moved)toast('✅ Đã lưu vị trí Kế toán-xác nhận');
+  }
+  el.addEventListener('pointermove',move);
+  el.addEventListener('pointerup',up);
+  el.addEventListener('pointercancel',up);
+}
+function drawAccountingKT(ctx,NW,NH,markIn){
+  const green='#137a3a';
+  const mark=normalizeAccountingMark(markIn,NW,NH);
+  const dim=getAccountingMarkDims(NW,NH,mark);
+  const x=mark.xr*NW,y=mark.yr*NH,w=dim.w,h=dim.h;
+  ctx.save();
+  ctx.font=`800 ${dim.fs}px Arial,"Segoe UI",sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(255,255,255,.97)';
+  roundRect(ctx,x,y,w,h,dim.rad);ctx.fill();
+  ctx.strokeStyle='#1a9d4b';ctx.lineWidth=Math.max(2,Math.round(NW*0.0018));
+  roundRect(ctx,x,y,w,h,dim.rad);ctx.stroke();
+  ctx.fillStyle=green;ctx.fillText(ACCOUNTING_LABEL,x+w/2,y+h/2+1);
+  ctx.restore();
+}
 function makeStampEl(st,idx){
   const el=document.createElement('div');el.className='stamp';el.dataset.idx=idx;
   if(st.kind!=='seal' && !st.src) st.src=buildStampDataURL();
@@ -1316,7 +1792,7 @@ function makeStampEl(st,idx){
   el.style.top =(st.yr*curNatH)+'px';
   el.style.width=w+'px';
   el.innerHTML = `<img src="${st.src}">`;
-  el.addEventListener('pointerdown',e=>{selectedStamp={page:curPage,idx};highlightSel();syncStampSizeSlider();startDrag(e,el,st);});
+  el.addEventListener('pointerdown',e=>{selectedAccMark=false;selectedStamp={page:curPage,idx};highlightSel();syncStampSizeSlider();renderAccountingMark();startDrag(e,el,st);});
   if(selectedStamp&&selectedStamp.page===curPage&&selectedStamp.idx===idx)
     el.style.outline='2px dashed #1a9d4b';
   return el;
@@ -1347,17 +1823,27 @@ function addStamp(kind,src){
   const st={kind, wr, xr:(1-wr)/2, yr:0.42};   // centered horizontally, mid page
   st.src = kind==='seal' ? src : buildStampDataURL();
   cur.stamps[curPage].push(st);
+  selectedAccMark=false;
   selectedStamp={page:curPage,idx:cur.stamps[curPage].length-1};
-  renderStamps();highlightSel();syncStampSizeSlider();
+  renderStamps();highlightSel();renderAccountingMark();syncStampSizeSlider();
 }
 function removeStamp(){
+  if(selectedAccMark){toast('Dấu “Kế toán-xác nhận” gắn với trạng thái Kế toán — hãy tắt nút Kế toán xác nhận nếu muốn gỡ');return;}
   if(!selectedStamp){toast('Chưa chọn con dấu');return;}
   cur.stamps[selectedStamp.page].splice(selectedStamp.idx,1);
-  selectedStamp=null;renderStamps();toast('Đã xoá con dấu');
+  selectedStamp=null;renderStamps();renderAccountingMark();toast('Đã xoá con dấu');
 }
 /* ===== CỠ DẤU bằng thanh trượt — kéo để tăng/giảm, dễ dùng trên di động ===== */
 function syncStampSizeSlider(){
   const s=document.getElementById('stampSizeSlider'), v=document.getElementById('stampSizeVal');
+  if(selectedAccMark){
+    const st=currentAccountingState();
+    if(!st.confirmed||!st.mark)return;
+    const pct=Math.round((st.mark.wr||0.07)*100);
+    if(s)s.value=pct;
+    if(v)v.textContent=pct+'%';
+    return;
+  }
   if(!selectedStamp){return;}
   const st=cur.stamps[selectedStamp.page][selectedStamp.idx];
   if(!st)return;
@@ -1366,13 +1852,23 @@ function syncStampSizeSlider(){
   if(v)v.textContent=pct+'%';
 }
 function setStampSize(pct){
+  pct=Math.max(3,Math.min(90,Number(pct)));
+  if(selectedAccMark){
+    const st=currentAccountingState();
+    if(!st.confirmed||!st.mark){toast('Chọn dấu Kế toán-xác nhận trước');return;}
+    st.mark.wr=Math.max(0.12,Math.min(0.45,pct/100));
+    persistAccountingMark(st.mark);
+    const v=document.getElementById('stampSizeVal');
+    if(v)v.textContent=Math.round(pct)+'%';
+    renderAccountingMark();
+    return;
+  }
   if(!selectedStamp){toast('Chọn con dấu trước');return;}
-  pct=Math.max(6,Math.min(90,Number(pct)));
   const st=cur.stamps[selectedStamp.page][selectedStamp.idx];
   st.wr=pct/100;
   const v=document.getElementById('stampSizeVal');
   if(v)v.textContent=Math.round(pct)+'%';
-  renderStamps();highlightSel();
+  renderStamps();highlightSel();renderAccountingMark();
 }
 function nudgeStampSize(delta){
   const s=document.getElementById('stampSizeSlider');
@@ -1395,6 +1891,8 @@ function renderStampedPage(pageIdx){
         const h=w*(simg.naturalHeight/simg.naturalWidth);
         ctx.drawImage(simg, st.xr*NW, st.yr*NH, w, h);
       }
+      const acc=currentAccountingState();
+      if(acc.confirmed && !acc.baked && acc.mark && acc.mark.page===pageIdx)drawAccountingKT(ctx,NW,NH,acc.mark);
       res(c);
     };
     img.src=cur.pages[pageIdx];
@@ -1583,6 +2081,7 @@ async function commitSave(name,approved){
   toast('Đang lưu lên hệ thống…');
   try{
     const id=cur.id||db.ref('documents').push().key;
+    const prev=docs[id]||{};
     if(cur.type==='file'){
       await db.ref('documents/'+id).set({
         name,type:'file',
@@ -1591,6 +2090,10 @@ async function commitSave(name,approved){
         composeSource:(docs[id]&&docs[id].composeSource)||cur.composeSource||null,
         submittedAt:(docs[id]&&docs[id].submittedAt)||cur.submittedAt||null,
         mgr:cur.mgr||null,
+        accountingConfirmed:!!prev.accountingConfirmed,
+        accountingConfirmedAt:prev.accountingConfirmedAt||null,
+        accountingBaked:false,
+        accountingMark:prev.accountingMark||cur.accountingMark||null,
         approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
       });
@@ -1609,6 +2112,10 @@ async function commitSave(name,approved){
         composeSource:(docs[id]&&docs[id].composeSource)||cur.composeSource||null,
         submittedAt:(docs[id]&&docs[id].submittedAt)||cur.submittedAt||null,
         mgr:cur.mgr||null,mgrRawBackup:cur.mgrRawBackup||null,
+        accountingConfirmed:!!prev.accountingConfirmed,
+        accountingConfirmedAt:prev.accountingConfirmedAt||null,
+        accountingBaked:approved?!!prev.accountingConfirmed:!!prev.accountingBaked,
+        accountingMark:prev.accountingMark||cur.accountingMark||null,
         approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
       });
@@ -1624,8 +2131,9 @@ function openDoc(id){
   if(d.type==='file'){
     cur={id,name:d.name,type:'file',fileExt:d.fileExt,fileMime:d.fileMime,fileData:d.fileData,
       attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,submittedAt:d.submittedAt||null,
-      composeSource:d.composeSource||null,mgr:d.mgr||null};
-    curPage=0;selectedStamp=null;openEditor();return;
+      composeSource:d.composeSource||null,mgr:d.mgr||null,
+      accountingConfirmed:!!d.accountingConfirmed,accountingConfirmedAt:d.accountingConfirmedAt||null,accountingBaked:!!d.accountingBaked,accountingMark:d.accountingMark||null};
+    curPage=0;selectedStamp=null;selectedAccMark=false;openEditor();return;
   }
   const stamps=d.stamps||{};
   // migrate any legacy {x,y,scale} stamps to normalized {xr,yr,wr}
@@ -1639,8 +2147,9 @@ function openDoc(id){
   const viewStamps = d.approved ? {} : stamps;
   cur={id,name:d.name,type:d.type,pages:viewPages.slice(),stamps:viewStamps,
     attachments:d.attachments||[],approved:d.approved,approvedAt:d.approvedAt,submittedAt:d.submittedAt||null,
-    composeSource:d.composeSource||null,mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null};
-  curPage=0;selectedStamp=null;openEditor();
+    composeSource:d.composeSource||null,mgr:d.mgr||null,mgrRawBackup:d.mgrRawBackup||null,
+    accountingConfirmed:!!d.accountingConfirmed,accountingConfirmedAt:d.accountingConfirmedAt||null,accountingBaked:!!d.accountingBaked,accountingMark:d.accountingMark||null};
+  curPage=0;selectedStamp=null;selectedAccMark=false;openEditor();
 }
 /* Mở riêng luồng DUYỆT BGĐ — không liên quan đến khóa chỉnh sửa. */
 function openDocForApproval(id){
@@ -1687,7 +2196,13 @@ async function downloadDoc(id){
   }
   toast('Đang chuẩn bị file…');
   const canvases=[];
-  for(const p of d.pages)canvases.push(await loadCanvas(p));
+  const srcPages=d.approved?(d.pages||d.rawPages||[]):(d.rawPages||d.pages||[]);
+  for(const p of srcPages){
+    const c=await loadCanvas(p);
+    const accMark=d.accountingMark||defaultAccountingMark(srcPages.length);
+    if(d.accountingConfirmed && !d.accountingBaked && Number(accMark.page||0)===canvases.length)drawAccountingKT(c.getContext('2d'),c.width,c.height,accMark);
+    canvases.push(c);
+  }
   await outputCanvases(canvases,d.type,d.name);
   downloadAttachments(d.attachments);
 }
@@ -1971,6 +2486,7 @@ async function composeSave(){
       attachments:cmpAttachments.map(a=>({name:a.name,type:a.type||'',size:a.size||0,data:a.data,merge:!!a.merge})),
       composeSource:source,
       mgr:null,mgrRawBackup:null,
+      accountingConfirmed:false,accountingConfirmedAt:null,accountingBaked:false,accountingMark:null,
       approved:false,updated:Date.now(),approvedAt:null,submittedAt:null,
       meta:{nguoiLap:source.name,boPhan:source.dept,ngayLap:source.date,xacNhan:source.okName}
     };
@@ -2167,7 +2683,7 @@ function renderNoticeList(){
         <span class="muted"> · ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</span>
       </div>
       <div class="row" style="gap:6px">
-        ${d.approved?'':`<button class="btn green sm" onclick="approveNotice('${d.id}')">✅ Duyệt</button>`}
+        ${d.approved?'':`<button class="btn bgd-red sm" onclick="approveNotice('${d.id}')">✅ Duyệt</button>`}
         <button class="btn ghost sm" onclick="editNotice('${d.id}')">✏️ Sửa</button>
         <button class="btn sm" onclick="downloadNotice('${d.id}')">⬇ Tải</button>
         <button class="btn gray sm" onclick="delNotice('${d.id}')">🗑</button>
