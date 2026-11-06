@@ -333,7 +333,64 @@
   .kt-doc-mark:active{cursor:grabbing}
   .kt-doc-mark.selected{outline:2px dashed #1a9d4b;outline-offset:2px}
 
-  /* ===== QUY ĐỊNH DUYỆT ===== */
+  /* ===== BGĐ review workspace / IDECO 2026 ===== */
+  :root{--red:#de3529;--red-d:#b91f1b;--bg:#f2f5f9;--line:#e1e7ef;--shadow:0 8px 25px rgba(15,23,42,.055)}
+  header{background:linear-gradient(112deg,#aa211f 0%,#d9382d 56%,#f05e46 100%);padding:15px 22px;gap:12px}
+  header h1{font-size:16px;letter-spacing:.15px}
+  header .sub{display:block;margin-top:3px;color:#fff3ed;letter-spacing:1.1px}
+  .card{border-radius:17px;box-shadow:var(--shadow);border-color:#e7eaf0}
+  .btn{transition:transform .15s,box-shadow .15s,background-color .15s}
+  .btn:hover:not(:disabled){box-shadow:0 4px 12px rgba(15,23,42,.11)}
+  .btn:focus-visible,.tab:focus-visible,textarea:focus-visible{outline:3px solid #f7ae9a;outline-offset:2px}
+  .drop{background:linear-gradient(120deg,#fff7f5,#fff);border-color:#f2b2a9}
+  .drop:hover{border-color:var(--red)}
+  .bgd-dashboard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+  .bgd-metric{border-radius:15px;background:#fff;border:1px solid #e7eaf0;padding:15px 18px;box-shadow:var(--shadow)}
+  .bgd-metric strong{display:block;font-size:27px;line-height:1.1;font-weight:850;margin-top:5px;color:#1f2937;font-variant-numeric:tabular-nums}
+  .bgd-metric span{font-size:12px;color:#64748b;font-weight:700}
+  .bgd-metric.review strong{color:#b45309}.bgd-metric.ok strong{color:#148544}
+  .bgd-metric.wait strong{color:#1d4f91}
+  .doc-item.is-review{border-left-color:#e78b0b;background:linear-gradient(90deg,#fff8e9 0,#fff 22%)}
+  .badge.review{background:#fff0d6;border:1px solid #f7d090;color:#995300}
+  .bgd-review-brief{margin-top:9px;background:#fff8e8;border:1px solid #f6d79d;border-radius:11px;padding:10px 12px;color:#7c4c0b;font-size:13px;line-height:1.55}
+  .bgd-review-brief b{display:block;color:#9a5200;margin-bottom:2px}
+  .bgd-workspace{border:1px solid #ead6b3;background:linear-gradient(135deg,#fffdf7 0,#fff 100%);border-radius:15px;padding:18px;margin-top:16px}
+  .bgd-workspace-head{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .bgd-workspace h3{font-size:17px;color:#7f3413;margin:0 0 4px}
+  .bgd-workspace label{color:#475569}
+  .bgd-workspace textarea{width:100%;display:block;min-height:108px;resize:vertical;padding:12px 14px;border-radius:11px;border:1px solid #d9e1eb;background:#fff;color:#1f2937;font:inherit;line-height:1.55}
+  .bgd-workspace textarea:focus{outline:none;border-color:#d77942;box-shadow:0 0 0 3px rgba(217,121,66,.13)}
+  .bgd-input-row{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);gap:12px;margin-bottom:12px}
+  .bgd-review-status{padding:12px 14px;border-radius:12px;background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;font-size:13px;line-height:1.55;margin-bottom:14px}
+  .bgd-review-status.review{background:#fff4db;border-color:#f2ce86;color:#85500a}
+  .bgd-review-status.ok{background:#eaf8ee;border-color:#c6e9d1;color:#17633a}
+  .bgd-review-status .review-comment{font-size:14px;white-space:pre-wrap;margin-top:5px;color:#1f2937}
+  .bgd-history{border-top:1px solid #e6e8ed;margin-top:14px;padding-top:12px}
+  .bgd-history details>summary{cursor:pointer;font-size:13px;font-weight:750;color:#475569}
+  .bgd-history-item{border-left:3px solid #cbd5e1;padding:8px 0 8px 12px;margin-top:8px;font-size:13px;color:#334155;line-height:1.5}
+  .bgd-history-item.review{border-color:#efa444}.bgd-history-item.ok{border-color:#34a36d}
+  .bgd-history-item p{margin:3px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+  .btn.review-return{background:#b86a10;border-color:#b86a10}
+  .bgd-workspace .bgd-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .bgd-workspace .bgd-actions .btn{justify-content:center}
+  @media(max-width:760px){
+    header{flex-wrap:wrap;padding:12px 13px}header h1{min-width:70%;font-size:14px}
+    header .hdr-compose,header>.btn{font-size:12px;padding:8px 10px}
+    .bgd-dashboard{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .bgd-metric{padding:12px}.bgd-metric strong{font-size:22px}
+    .bgd-input-row{grid-template-columns:1fr}.bgd-workspace{padding:13px}
+    .bgd-workspace .bgd-actions .btn{flex:1 1 150px}
+  }
+  /* Layout hồ sơ 2 tầng: nội dung đủ rộng, thanh hành động tách riêng */
+  #home .doc-item{grid-template-columns:58px minmax(0,1fr);align-items:start}
+  #home .doc-item .thumb{margin-top:2px}
+  #home .doc-actions{grid-column:1/-1;justify-content:flex-end;max-width:none;width:100%;margin-top:2px}
+  #home .doc-title{font-size:16px}
+  @media(max-width:640px){
+    #home .doc-item{grid-template-columns:44px minmax(0,1fr)}
+    #home .doc-actions{justify-content:stretch}
+  }
+    /* ===== QUY ĐỊNH DUYỆT ===== */
   .rules-modal{max-width:980px;width:min(980px,96vw);max-height:90vh;overflow:auto}
   .rules-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
   .rules-view{background:#fff;border:1px solid #e3e6ea;border-radius:14px;padding:24px;min-height:260px;line-height:1.65;color:#1f2937;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
@@ -391,6 +448,12 @@
 
   <!-- HOME -->
   <div id="home">
+    <div class="bgd-dashboard" aria-label="Tổng quan hồ sơ">
+      <div class="bgd-metric"><span>📂 TỔNG HỒ SƠ</span><strong id="bgdCountAll">0</strong></div>
+      <div class="bgd-metric wait"><span>🕒 CHỜ BGĐ DUYỆT</span><strong id="bgdCountWait">0</strong></div>
+      <div class="bgd-metric review"><span>↩ CẦN XEM LẠI</span><strong id="bgdCountReview">0</strong></div>
+      <div class="bgd-metric ok"><span>✓ ĐÃ DUYỆT</span><strong id="bgdCountOk">0</strong></div>
+    </div>
     <div class="card">
       <div class="drop" id="drop" onclick="fileInp.click()">
         <div class="ico">📤</div>
@@ -405,6 +468,7 @@
         <div class="tab active" data-f="all" onclick="setFilter('all')">Tất cả</div>
         <div class="tab" data-f="mgrwait" onclick="setFilter('mgrwait')">Chờ xác nhận QL</div>
         <div class="tab" data-f="wait" onclick="setFilter('wait')">Chờ duyệt</div>
+        <div class="tab" data-f="review" onclick="setFilter('review')">↩ Xem lại / góp ý</div>
         <div class="tab" data-f="ok" onclick="setFilter('ok')">Đã duyệt</div>
       </div>
       <div id="list"></div>
@@ -483,6 +547,24 @@
           <input id="saveName" placeholder="VD: Báo giá Long Châu 07/2026">
         </div>
       </div>
+      <section id="bgdReviewWorkspace" class="bgd-workspace" aria-label="Ý kiến duyệt của Ban Giám đốc">
+        <div class="bgd-workspace-head">
+          <div><h3>💬 Ý KIẾN BAN GIÁM ĐỐC</h3>
+          <div class="muted">Ghi nhận góp ý, duyệt hoặc yêu cầu xem lại. Nhân viên xem được trên tất cả máy kết nối Firebase.</div></div>
+          <span class="badge mgr">HỒ SƠ · IDECO</span>
+        </div>
+        <div id="bgdCurrentReview" class="bgd-review-status">Chưa có nhận xét của Ban Giám đốc.</div>
+        <div class="bgd-input-row">
+          <div><label for="bgdAuthor">Họ tên người góp ý (BGĐ)</label><input id="bgdAuthor" maxlength="120" placeholder="VD: Giám đốc / Phó Giám đốc" autocomplete="name"></div>
+          <div><label for="bgdOpinion">Nội dung ý kiến / đề nghị điều chỉnh</label>
+          <textarea id="bgdOpinion" maxlength="5000" placeholder="VD: Đề nghị kiểm tra lại đơn giá, bổ sung bảng so sánh và trình duyệt lại trước ngày…"></textarea></div>
+        </div>
+        <div class="bgd-actions">
+          <button class="btn review-return" id="btnBgdReview" onclick="requestBgdReview()">↩ XEM LẠI — GỬI GÓP Ý</button>
+          <span class="muted" id="bgdReviewHelp">Bấm XEM LẠI để trả hồ sơ cho nhân viên chỉnh sửa; cần xác nhận mật khẩu BGĐ.</span>
+        </div>
+        <div id="bgdReviewHistory" class="bgd-history"></div>
+      </section>
       <div class="row" style="margin-top:12px">
         <button class="btn" id="btnSaveDraft" onclick="saveDoc(false)">💾 Lưu (chờ duyệt)</button>
         <button class="btn bgd-red" id="btnApprove" onclick="saveDoc(true)">✅ Đóng dấu & Duyệt</button>
@@ -838,8 +920,8 @@
 
 <div class="modal-bg" id="apprModal">
   <div class="modal">
-    <h3 style="margin-top:0">Xác nhận duyệt</h3>
-    <p class="muted">Nhập mật khẩu để ký duyệt tài liệu này.</p>
+    <h3 id="apprModalTitle" style="margin-top:0">Xác nhận duyệt</h3>
+    <p id="apprModalDesc" class="muted">Nhập mật khẩu để ký duyệt tài liệu này.</p>
     <input type="password" id="apprPwd" placeholder="Mật khẩu ký duyệt" onkeydown="if(event.key==='Enter')confirmApprove()">
     <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin-top:10px">
       <input type="checkbox" id="rememberPwd" style="width:auto" checked> Ghi nhớ, lần sau không hỏi lại trên máy này
@@ -847,7 +929,7 @@
     <div id="apprErr" class="muted" style="color:var(--red);height:16px;margin-top:8px"></div>
     <div class="row" style="justify-content:flex-end;margin-top:8px">
       <button class="btn ghost sm" onclick="closeModal('apprModal')">Huỷ</button>
-      <button class="btn bgd-red sm" onclick="confirmApprove()">✅ Xác nhận duyệt</button>
+      <button class="btn bgd-red sm" id="apprConfirmBtn" onclick="confirmApprove()">✅ Xác nhận duyệt</button>
     </div>
   </div>
 </div>
@@ -966,6 +1048,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/p
 
 /* ===== STATE ===== */
 let docs = {};
+const BGD_MAX_HISTORY = 50;
+function isBgdReturn(d){return !!(d && !d.approved && !d.submittedAt && d.bgdReview && d.bgdReview.status==='review');}
+function bgdReviewEntry(status, author, note){return {status,author:author||'Ban Giám đốc',note:note||'',at:Date.now()};}
+function bgdHistory(d,entry){return [...(Array.isArray(d.bgdReviewHistory)?d.bgdReviewHistory:[]),entry].slice(-BGD_MAX_HISTORY);}
+function safeBgdNote(s){return esc(s||'').replace(/\n/g,'<br>');}
 let curFilter = "all";
 let cur = null;
 let curPage = 0;
@@ -1114,7 +1201,9 @@ setTimeout(()=>{
 db.ref('documents').on('value',snap=>{
   docs=snap.val()||{};
   renderList();
-  if(document.getElementById('editor').style.display==='block')setTimeout(renderEdMgrBar,0);
+  if(document.getElementById('editor').style.display==='block'){
+    setTimeout(()=>{renderEdMgrBar();renderEditContentAction();renderBgdReview(false);},0);
+  }
 });
 // Signatures stored on Firebase → available on every machine, no re-upload
 db.ref('signatures').on('value',snap=>{
@@ -1136,14 +1225,21 @@ function setFilter(f){curFilter=f;
 function renderList(){
   const el=document.getElementById('list');
   let arr=Object.entries(docs).map(([id,d])=>({id,...d})).sort((a,b)=>(b.updated||0)-(a.updated||0));
-  if(curFilter==='wait') arr=arr.filter(d=>!d.approved);
+  const allDocs=arr;
+  document.getElementById('bgdCountAll').textContent=allDocs.length;
+  document.getElementById('bgdCountWait').textContent=allDocs.filter(d=>!d.approved&&!isBgdReturn(d)).length;
+  document.getElementById('bgdCountReview').textContent=allDocs.filter(isBgdReturn).length;
+  document.getElementById('bgdCountOk').textContent=allDocs.filter(d=>d.approved).length;
+  if(curFilter==='wait') arr=arr.filter(d=>!d.approved&&!isBgdReturn(d));
+  if(curFilter==='review') arr=arr.filter(isBgdReturn);
   if(curFilter==='ok') arr=arr.filter(d=>d.approved);
   if(curFilter==='mgrwait') arr=arr.filter(d=>!d.approved && !d.mgr);
-  if(!arr.length){el.innerHTML=`<div class="empty"><div class="ico">📄</div>Chưa có tài liệu nào</div>`;return;}
+  if(!arr.length){el.innerHTML=`<div class="empty"><div class="ico">📄</div>Không có hồ sơ trong nhóm này</div>`;return;}
   el.innerHTML=arr.map(d=>{
     const isCompose=!!d.composeSource;
     const submitted=!!d.submittedAt;
-    const stateClass=d.approved?'is-approved':(submitted?'is-submitted':'is-pending');
+    const needsReview=isBgdReturn(d);
+    const stateClass=d.approved?'is-approved':(needsReview?'is-review':(submitted?'is-submitted':'is-pending'));
     const editAction = isCompose
       ? (d.approved||submitted
           ? `<button class="btn ghost sm" onclick="openDoc('${d.id}')" title="Văn bản đã gửi BGĐ/đã duyệt — chỉ xem">👁️ Xem</button>`
@@ -1176,13 +1272,15 @@ function renderList(){
         <div class="doc-title-row">
           <b class="doc-title">${esc(d.name)}</b>
           <div class="doc-badges">
-            <span class="badge ${d.approved?'ok':'wait'}">${d.approved?'✅ Đã duyệt':(submitted?'📨 Đã gửi BGĐ':'⏳ Chờ duyệt')}</span>
+            <span class="badge ${d.approved?'ok':(needsReview?'review':'wait')}">${d.approved?'✅ Đã duyệt':(needsReview?'↩ BGĐ yêu cầu XEM LẠI':(submitted?'📨 Đã gửi BGĐ':'⏳ Chờ duyệt'))}</span>
             ${d.mgr?`<span class="badge mgr">✍️ QL đã xác nhận</span>`:''}
             ${accOn?`<span class="badge acc">Kế toán · Đã xác nhận</span>`:''}
           </div>
         </div>
         <div class="doc-meta">Cập nhật ${fmtDate(d.updated)}${(d.attachments&&d.attachments.length)?' · 📎 '+d.attachments.length+' tệp':''}</div>
         ${mgrLineHTML(d)}
+        ${needsReview?`<div class="bgd-review-brief"><b>📣 BGĐ GÓP Ý — CẦN CHỈNH SỬA</b>${safeBgdNote((d.bgdReview||{}).note)}<div style="margin-top:4px;font-size:12px">${esc((d.bgdReview||{}).author||'Ban Giám đốc')} · ${fmtDate((d.bgdReview||{}).at)}</div><button class="btn ghost sm" style="margin-top:8px" onclick="openDoc('${d.id}')">👁️ MỞ TÀI LIỆU & XEM GÓP Ý</button></div>`:''}
+        ${!needsReview&&d.bgdReview&&d.bgdReview.status==='approved'&&d.bgdReview.note?`<div class="mgrline ok" style="color:#137a3a">💬 Ý kiến BGĐ: ${esc(d.bgdReview.note.slice(0,150))}${d.bgdReview.note.length>150?'…':''}</div>`:''}
         ${submitted&&!d.approved?`<div class="mgrline ok" style="color:#7c3f00">📨 Đã trình Ban Giám Đốc lúc ${fmtDate(d.submittedAt)} — <b>chỉ khóa chỉnh sửa</b>; quyền duyệt vẫn hoạt động bình thường.</div>`:''}
       </div>
       <div class="doc-actions">
@@ -1413,7 +1511,7 @@ function openEditor(){
   const isFile=cur.type==='file';
   document.getElementById('stampArea').style.display=isFile?'none':'block';
   document.getElementById('fileOnlyBox').style.display=isFile?'block':'none';
-  renderEdAttList();renderEdMgrBar();renderEditContentAction();
+  renderEdAttList();renderEdMgrBar();renderEditContentAction();renderBgdReview(true);
   const dState=cur.id?(docs[cur.id]||{}):{};
   const draftBtn=document.getElementById('btnSaveDraft');
   if(draftBtn)draftBtn.style.display=(dState.approved||dState.submittedAt)?'none':'inline-flex';
@@ -1443,6 +1541,13 @@ function renderEditContentAction(){
     box.innerHTML='<b style="color:#137a3a">✅ Văn bản đã được Ban Giám Đốc duyệt.</b> Đang hiển thị <b>bản chính thức đã đóng dấu duyệt</b>. Nội dung đã khóa; nếu có sai sót phải lập hồ sơ mới.';
     return;
   }
+  if(isBgdReturn(d)){
+    box.className='bgd-review-status review';
+    box.innerHTML='<b>↩ BGĐ đã trả hồ sơ để XEM LẠI.</b> Đọc ý kiến trong khung bên dưới, sửa nội dung và lưu lại. Sau khi sửa xong, cần cấp quản lý xác nhận rồi trình BGĐ duyệt lại.'+
+      (d.composeSource?'<div class="row" style="margin-top:8px"><button class="btn sm" onclick="openComposeEdit(\''+cur.id+'\')">✏️ SỬA ĐỀ XUẤT THEO GÓP Ý</button></div>':'<div class="row" style="margin-top:8px"><button class="btn sm" onclick="document.getElementById(\'replaceDocInp\').click()">🔄 TẢI LÊN BẢN TÀI LIỆU ĐÃ SỬA</button></div>');
+    return;
+  }
+  box.className='hint';
   if(d.submittedAt){
     box.innerHTML='<b style="color:#9a5b00">📨 Văn bản đã gửi Ban Giám Đốc.</b> <b>Khóa này chỉ áp dụng cho CHỈNH SỬA</b>, không khóa quyền duyệt. Ban Giám Đốc vẫn có thể đóng dấu và duyệt hồ sơ ngay.'+
       (d.mgr?'<div class="row" style="margin-top:8px"><button class="btn bgd-red sm" onclick="saveDoc(true)">✅ BGĐ DUYỆT NGAY</button></div>':'');
@@ -1493,6 +1598,7 @@ async function replaceCurrentDocument(file){
       mgr:null,mgrRawBackup:null,approved:false,approvedAt:null,submittedAt:null,
       accountingConfirmed:false,accountingConfirmedAt:null,accountingBaked:false,accountingMark:null,
       updated:Date.now(),
+      bgdReview:d.bgdReview||null,bgdReviewHistory:d.bgdReviewHistory||[],
       replacedAt:Date.now(),replacedFrom:file.name
     };
     await db.ref('documents/'+id).set(payload);
@@ -2038,6 +2144,84 @@ async function mgrRevoke(){
   }catch(err){toast('Lỗi: '+err.message);}
 }
 
+/* ===== Ý KIẾN BGĐ / YÊU CẦU XEM LẠI (Realtime Database) ===== */
+function renderBgdReview(resetInputs){
+  if(!cur)return;
+  const d=cur.id?(docs[cur.id]||{}):{};
+  const last=d.bgdReview||null;
+  const current=document.getElementById('bgdCurrentReview');
+  const history=document.getElementById('bgdReviewHistory');
+  const btn=document.getElementById('btnBgdReview');
+  const help=document.getElementById('bgdReviewHelp');
+  const author=document.getElementById('bgdAuthor');
+  const opinion=document.getElementById('bgdOpinion');
+  if(resetInputs){
+    opinion.value='';
+    author.value=localStorage.getItem('ideco_bgd_author')||'';
+  }
+  btn.disabled=!cur.id||!!d.approved;
+  author.disabled=!!d.approved;
+  opinion.disabled=!!d.approved;
+  help.textContent=d.approved?'Hồ sơ đã duyệt, lịch sử góp ý được lưu để tra cứu.':(!cur.id?'Cần lưu hồ sơ trước khi gửi góp ý.':'Ý kiến sẽ lưu trên Firebase; XEM LẠI mở khóa chỉnh sửa và yêu cầu trình duyệt lại.');
+  if(last){
+    const returned=isBgdReturn(d);
+    const done=!!d.approved;
+    current.className='bgd-review-status '+(done?'ok':(returned?'review':''));
+    const label=done?'✅ ĐÃ DUYỆT':(returned?'↩ BGĐ YÊU CẦU XEM LẠI':'💬 Ý kiến BGĐ đã ghi nhận');
+    current.innerHTML='<b>'+label+'</b> · '+esc(last.author||'Ban Giám đốc')+' · '+fmtDate(last.at)+
+      '<div class="review-comment">'+safeBgdNote(last.note||'(Không có ghi chú bổ sung)')+'</div>';
+  }else{
+    current.className='bgd-review-status';
+    current.textContent='Hồ sơ chưa có ý kiến từ Ban Giám đốc. Sau khi góp ý, nhân viên sẽ nhìn thấy nội dung tại đây và ngoài danh sách.';
+  }
+  const events=Array.isArray(d.bgdReviewHistory)?d.bgdReviewHistory:[];
+  if(!events.length){history.innerHTML='';return;}
+  history.innerHTML='<details><summary>🕘 Xem lịch sử ý kiến BGĐ ('+events.length+' lần)</summary>'+
+    events.slice().reverse().map(e=>'<div class="bgd-history-item '+(e.status==='review'?'review':'ok')+'"><b>'+(e.status==='review'?'↩ XEM LẠI':(e.status==='approved'?'✅ DUYỆT':'📨 GỬI LẠI'))+'</b> · '+esc(e.author||'Ban Giám đốc')+' · '+fmtDate(e.at)+'<p>'+safeBgdNote(e.note||'Không có ghi chú')+'</p></div>').join('')+'</details>';
+}
+function requestBgdReview(){
+  if(!cur||!cur.id){toast('Cần lưu hồ sơ trước khi gửi góp ý');return;}
+  const d=docs[cur.id]||{};
+  if(d.approved){toast('Hồ sơ đã duyệt — không thể trả lại');return;}
+  const note=document.getElementById('bgdOpinion').value.trim();
+  if(!note){toast('⚠️ Hãy nhập nội dung góp ý trước khi chọn XEM LẠI');document.getElementById('bgdOpinion').focus();return;}
+  if(!document.getElementById('bgdAuthor').value.trim()){
+    toast('⚠️ Hãy điền họ tên người góp ý của BGĐ');document.getElementById('bgdAuthor').focus();return;
+  }
+  if(!confirm('Trả hồ sơ cho nhân viên XEM LẠI?\n\nHồ sơ sẽ được mở khóa để sửa, thu hồi xác nhận quản lý cũ và phải trình duyệt lại. Ý kiến BGĐ được giữ nguyên trong lịch sử.'))return;
+  approvalContext='review';
+  pendingReviewId=cur.id;
+  openModal('apprModal');
+}
+let pendingReviewId=null;
+async function commitReturnForRevision(){
+  const id=pendingReviewId;
+  const d=docs[id]||{};
+  if(!id||!d.name||d.approved){toast('Không thể trả lại hồ sơ này');return;}
+  const note=document.getElementById('bgdOpinion').value.trim();
+  const author=document.getElementById('bgdAuthor').value.trim();
+  if(!note||!author){toast('Thiếu họ tên hoặc nội dung góp ý');return;}
+  const event=bgdReviewEntry('review',author,note);
+  const upd={bgdReview:event,bgdReviewHistory:bgdHistory(d,event),
+    approved:false,approvedAt:null,submittedAt:null,mgr:null,mgrRawBackup:null,
+    accountingConfirmed:false,accountingConfirmedAt:null,accountingBaked:false,accountingMark:null,
+    updated:event.at};
+  // Trả lại trang gốc trước khi xác nhận quản lý đã được đóng lên trang.
+  if(d.type!=='file' && d.mgrRawBackup && d.mgrRawBackup.length){
+    upd.rawPages=d.mgrRawBackup;
+    upd.pages=d.mgrRawBackup;
+  }
+  try{
+    await db.ref('documents/'+id).update(upd);
+    localStorage.setItem('ideco_bgd_author',author);
+    if(cur && cur.id===id){cur.mgr=null;cur.mgrRawBackup=null;cur.submittedAt=null;
+      cur.accountingConfirmed=false;cur.accountingMark=null;
+      if(upd.pages){cur.pages=upd.pages.slice();if(cur.type!=='file')renderPage();}}
+    closeEditor();
+    setFilter('review');
+    toast('↩ Đã gửi XEM LẠI. Nhân viên có thể mở hồ sơ và đọc góp ý BGĐ.');
+  }catch(e){console.error(e);toast('Lỗi khi lưu ý kiến BGĐ: '+(e.message||e));}
+}
 /* ===== SAVE ===== */
 let pendingApproveName='';
 let approvalContext='doc'; // 'doc' | 'notice' | 'noticeApprove'
@@ -2075,6 +2259,7 @@ function confirmApprove(){
   closeModal('apprModal');document.getElementById('apprPwd').value='';
   if(approvalContext==='notice'){ commitNoticeSave(true); }
   else if(approvalContext==='noticeApprove'){ commitApproveExistingNotice(pendingNoticeId); }
+  else if(approvalContext==='review'){ commitReturnForRevision(); }
   else{ commitSave(pendingApproveName,true); }
 }
 async function commitSave(name,approved){
@@ -2082,6 +2267,12 @@ async function commitSave(name,approved){
   try{
     const id=cur.id||db.ref('documents').push().key;
     const prev=docs[id]||{};
+    const note=document.getElementById('bgdOpinion').value.trim();
+    const author=document.getElementById('bgdAuthor').value.trim()||'Ban Giám đốc';
+    const approvalEntry=approved?bgdReviewEntry('approved',author,note||'Đã duyệt; không có ý kiến bổ sung.'):null;
+    const reviewData=approvalEntry?
+      {bgdReview:approvalEntry,bgdReviewHistory:bgdHistory(prev,approvalEntry)}:
+      {bgdReview:prev.bgdReview||null,bgdReviewHistory:prev.bgdReviewHistory||[]};
     if(cur.type==='file'){
       await db.ref('documents/'+id).set({
         name,type:'file',
@@ -2094,7 +2285,7 @@ async function commitSave(name,approved){
         accountingConfirmedAt:prev.accountingConfirmedAt||null,
         accountingBaked:false,
         accountingMark:prev.accountingMark||cur.accountingMark||null,
-        approved,updated:Date.now(),
+        ...reviewData,approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
       });
     }else{
@@ -2116,11 +2307,12 @@ async function commitSave(name,approved){
         accountingConfirmedAt:prev.accountingConfirmedAt||null,
         accountingBaked:approved?!!prev.accountingConfirmed:!!prev.accountingBaked,
         accountingMark:prev.accountingMark||cur.accountingMark||null,
-        approved,updated:Date.now(),
+        ...reviewData,approved,updated:Date.now(),
         approvedAt:approved?Date.now():(cur.approvedAt||null)
       });
     }
-    toast(approved?'✅ Đã duyệt & lưu lên hệ thống':'💾 Đã lưu (chờ duyệt)');
+    if(approved)localStorage.setItem('ideco_bgd_author',author);
+    toast(approved?'✅ Đã duyệt, lưu dấu & ý kiến BGĐ':'💾 Đã lưu (chờ duyệt)');
     closeEditor();
   }catch(err){console.error(err);toast('Lỗi khi lưu: '+err.message);}
 }
@@ -2249,7 +2441,10 @@ async function broadcastPending(id){
   if(!confirm('Gửi hồ sơ này lên Ban Giám Đốc duyệt?\n\nSau khi gửi, nội dung sẽ bị KHÓA và không thể chỉnh sửa. Nếu sai sót phải lập đề xuất mới.'))return;
   const ts=Date.now();
   try{
-    await db.ref('documents/'+id).update({submittedAt:ts,updated:ts});
+    const resubmitted=isBgdReturn(d);
+    const update={submittedAt:ts,updated:ts};
+    if(resubmitted)update.bgdReviewHistory=bgdHistory(d,{status:'resubmitted',author:(d.mgr&&d.mgr.name)||'Nhân viên',note:'Đã chỉnh sửa và gửi lại Ban Giám đốc duyệt.',at:ts});
+    await db.ref('documents/'+id).update(update);
     await db.ref('broadcasts/current').set({
       ts,kind:'pending',title:'XIN PHÉP CHỜ DUYỆT',lastDoc:d.name,docId:id
     });
@@ -2258,7 +2453,16 @@ async function broadcastPending(id){
 }
 
 /* ===== MODAL ===== */
-function openModal(id){document.getElementById(id).classList.add('show');}
+function openModal(id){
+  if(id==='apprModal'){
+    const reviewing=approvalContext==='review';
+    document.getElementById('apprModalTitle').textContent=reviewing?'🔐 BGĐ xác nhận XEM LẠI':'🔐 Xác nhận duyệt';
+    document.getElementById('apprModalDesc').textContent=reviewing?'Nhập mật khẩu BGĐ để lưu góp ý và trả hồ sơ về cho nhân viên chỉnh sửa.':'Nhập mật khẩu để ký duyệt tài liệu này.';
+    document.getElementById('apprConfirmBtn').textContent=reviewing?'↩ Xác nhận XEM LẠI':'✅ Xác nhận duyệt';
+    document.getElementById('apprPwd').value='';
+  }
+  document.getElementById(id).classList.add('show');
+}
 function closeModal(id){document.getElementById(id).classList.remove('show');
   const e1=document.getElementById('apprErr');if(e1)e1.textContent='';
   const e2=document.getElementById('mgrErr');if(e2)e2.textContent='';}
@@ -2488,6 +2692,7 @@ async function composeSave(){
       mgr:null,mgrRawBackup:null,
       accountingConfirmed:false,accountingConfirmedAt:null,accountingBaked:false,accountingMark:null,
       approved:false,updated:Date.now(),approvedAt:null,submittedAt:null,
+      bgdReview:old?.bgdReview||null,bgdReviewHistory:old?.bgdReviewHistory||[],
       meta:{nguoiLap:source.name,boPhan:source.dept,ngayLap:source.date,xacNhan:source.okName}
     };
     await db.ref('documents/'+id).set(payload);
